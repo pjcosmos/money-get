@@ -233,7 +233,7 @@
 
   <div class="past-banner" id="past-banner">
     <span id="past-text"></span>
-    <button onclick="goCurrentMonth()">이번 달로 돌아가기</button>
+    <button onclick="window.goCurrentMonth()">이번 달로 돌아가기</button>
   </div>
 
   <div class="main-tabs">
@@ -313,15 +313,15 @@
   <button class="reset-btn" onclick="resetAll()">초기화</button>
 </div>
 
-<div id="pin-screen" style="display:none;position:fixed;inset:0;background:#f5f5f3;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
-  <p style="font-size:17px;font-weight:500;color:#1a1a1a;" id="pin-title">PIN 입력</p>
+<div id="pin-screen" style="display:flex;position:fixed;inset:0;background:#f5f5f3;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+  <p style="font-size:17px;font-weight:500;color:#1a1a1a;" id="pin-title">PIN 번호 입력</p>
   <div style="display:flex;gap:12px;" id="pin-dots">
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-0"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-1"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-2"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-3"></div>
   </div>
-  <p style="font-size:12px;color:#e05a2b;min-height:18px;" id="pin-error"></p>
+  <p style="font-size:12px;color:#aaa;" id="pin-desc">번호를 입력하면 해당 보관함이 열립니다.</p>
   <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
     <button onclick="window.pinInput('1')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">1</button>
     <button onclick="window.pinInput('2')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">2</button>
@@ -349,6 +349,8 @@ let mainTab='budget';
 let activeRecordEnv='life';
 let savePanelOpen=false;
 let isReadonly=false;
+let userPin = ''; // 전역 PIN 변수
+let unlocked = false;
 
 const CAT_COLORS={'식당':'#D85A30','카페':'#BA7517','마트':'#1D9E75','교통':'#185FA5','쇼핑':'#534AB7','문화':'#993556','기타':'#888780'};
 const CATS=Object.keys(CAT_COLORS);
@@ -391,7 +393,7 @@ function getData(key){
 let d=getData(TODAY);
 
 function saveData(){
-  if(viewKey!==TODAY)return;
+  if(!unlocked || viewKey!==TODAY)return;
   const incomeEl = document.getElementById('income');
   if(incomeEl) d.income = incomeEl.value;
   const all=loadAll();all[TODAY]=d;saveAll(all);
@@ -412,8 +414,7 @@ function buildTabs(){
   const all=loadAll();const ks=new Set(Object.keys(all));ks.add(TODAY);
   for(let i=5;i>=0;i--){const t=new Date(now.getFullYear(),now.getMonth()-i,1);ks.add(mKey(t.getFullYear(),t.getMonth()));}
   const sorted=[...ks].filter(k=>k<=TODAY).sort();
-  document.getElementById('month-tabs').innerHTML=sorted.map(k=>`<button class="month-tab ${k===viewKey?'active':''}" onclick="switchMonth('${k}')">${mLabel(k)}</button>`).join('');
-  setTimeout(()=>{const a=document.querySelector('.month-tab.active');if(a)a.scrollIntoView({inline:'nearest',block:'nearest'});},50);
+  document.getElementById('month-tabs').innerHTML=sorted.map(k=>`<button class="month-tab ${k===viewKey?'active':''}" onclick="window.switchMonth('${k}')">${mLabel(k)}</button>`).join('');
 }
 
 window.switchMonth = function(key){
@@ -425,7 +426,7 @@ window.switchMonth = function(key){
   renderAll();
 }
 
-window.goCurrentMonth = function(){switchMonth(TODAY);}
+window.goCurrentMonth = function(){window.switchMonth(TODAY);}
 
 function setRO(on){
   ['income','go-btn','add-btn','merge-btn','add-goal-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=on;});
@@ -457,7 +458,7 @@ function renderEnvelopes(){
         <div class="env-amt empty" id="ea-${e.key}">—</div>
         <div class="env-pct" id="ep-${e.key}">${e.pct}%</div>
         ${e.showDaily?`<div class="env-daily" id="ed-${e.key}"></div>`:''}
-        ${e.key==='save'?`<div style="font-size:10px;color:#ccc;margin-top:4px;">${savePanelOpen?'▲':'▼'} 세부 목표</div>`:''}
+        ${e.key==='save'?`<div style="font-size:10px;color:#ccc;margin-top:4px;">▼ 세부 목표</div>`:''}
       </div>
     </div>`).join('');
 }
@@ -475,8 +476,6 @@ window.toggleSavePanel = function(){
   document.getElementById('save-panel').classList.toggle('open',savePanelOpen);
   const envCard=document.getElementById('env-save');
   if(envCard)envCard.style.borderColor=savePanelOpen?'#1a1a1a':'';
-  const hint=envCard?envCard.querySelector('.env-expand-hint'):null;
-  if(hint)hint.textContent=(savePanelOpen?'▲':'▼')+' 세부 목표';
   if(savePanelOpen)renderGoals();
 }
 function renderGoals(){
@@ -496,10 +495,7 @@ function renderGoals(){
       <span class="goal-pct">${g.pct}%</span>
     </div></div>`;
   }).join('');
-  const info=document.getElementById('goal-sum-info');
-  info.textContent='합계 '+total+'%';
-  info.className='goal-sum-info'+(total!==100?' over':'');
-  if(isReadonly)document.querySelectorAll('.goal-name-input,#goal-list input[type=range],.icon-btn').forEach(el=>el.disabled=true);
+  document.getElementById('goal-sum-info').textContent='합계 '+total+'%';
 }
 window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
 window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
@@ -565,7 +561,7 @@ window.calculate = function(){
     const aEl=document.getElementById('ea-'+e.key);
     if(aEl){if(av>0){aEl.textContent=amt.toLocaleString()+'원';aEl.classList.remove('empty');}else{aEl.textContent='—';aEl.classList.add('empty');}}
     const pEl=document.getElementById('ep-'+e.key);if(pEl)pEl.textContent=e.pct+'%';
-    if(e.showDaily){const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 약 '+Math.round(amt/30).toLocaleString()+'원':'';}
+    if(e.showDaily){const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 '+Math.round(amt/30).toLocaleString()+'원':'';}
   });
   if(savePanelOpen)renderGoals();
   if(mainTab==='record')renderRecordTab();
@@ -573,82 +569,39 @@ window.calculate = function(){
 
 /* ── 기록 탭 ── */
 const RECORD_ENVS=['life','fun']; 
-
 function renderRecordEnvTabs(){
-  const tabs=RECORD_ENVS.map(key=>{
+  document.getElementById('record-env-tabs').innerHTML=RECORD_ENVS.map(key=>{
     const env=d.envelopes.find(e=>e.key===key);
     return`<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="window.switchRecordEnv('${key}')">${env?env.name:key}</button>`;
   }).join('');
-  document.getElementById('record-env-tabs').innerHTML=tabs;
 }
 window.switchRecordEnv = function(key){activeRecordEnv=key;renderRecordTab();}
 
 function renderRecordTab(){
   renderRecordEnvTabs();
   const key=activeRecordEnv;
-  const env=d.envelopes.find(e=>e.key===key);
-  if(!d.spends)d.spends={life:[],fun:[]};
   if(!d.spends[key])d.spends[key]=[];
   const budget=getBudget(key);
   const spent=getSpent(key);
   const remaining=budget-spent;
   const pct=budget>0?Math.min(100,Math.round(spent/budget*100)):0;
+  const todayStr=new Date().toISOString().slice(0,10);
 
-  const barHtml=`<div class="budget-bar-wrap">
-    <div class="budget-bar-labels">
-      <span>예산 <strong>${budget>0?budget.toLocaleString()+'원':'미설정'}</strong></span>
-      <span class="${spent>budget&&budget>0?'over-label':''}">${spent>0?spent.toLocaleString()+'원 사용':''} ${budget>0&&spent>0?'· 남은 돈 '+remaining.toLocaleString()+'원':''}</span>
-    </div>
-    <div class="budget-bar-bg"><div class="budget-bar-fill ${spent>budget&&budget>0?'over':''}" style="width:${pct}%"></div></div>
-  </div>`;
+  let barHtml=`<div class="budget-bar-wrap"><div class="budget-bar-labels"><span>예산 <strong>${budget.toLocaleString()}원</strong></span><span>${spent.toLocaleString()}원 사용</span></div><div class="budget-bar-bg"><div class="budget-bar-fill" style="width:${pct}%"></div></div></div>`;
+  let addHtml=`<div class="spend-add-card"><div class="spend-row-input"><input class="spend-input" id="si-note" placeholder="내용"/><input class="spend-input" type="date" id="si-date" value="${todayStr}"/></div><div class="spend-row-input2"><select class="spend-input" id="si-cat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="spend-input right" type="number" id="si-amt" placeholder="금액"/><button class="spend-add-btn" onclick="window.addSpend('${key}')">+</button></div></div>`;
+  let listHtml=`<div class="spend-list-card">${(d.spends[key]||[]).slice().reverse().map(s=>`<div class="spend-item"><span>${s.date.slice(5)}</span><div>${s.note}<br><span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]}22">${s.cat}</span></div><span class="spend-amount">${s.amount.toLocaleString()}원</span><button class="icon-btn" onclick="window.rmSpend('${key}',${s.id})">×</button></div>`).join('')}<div class="spend-total-row"><span>총 지출</span><strong>${spent.toLocaleString()}원</strong></div></div>`;
 
-  const today=new Date();
-  const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-  const addHtml=`<div class="spend-add-card">
-    <div class="spend-add-title">지출 추가</div>
-    <div class="spend-row-input">
-      <input class="spend-input" type="text" id="si-note-${key}" placeholder="내용 (예: 스타벅스 라떼)" ${isReadonly?'disabled':''}/>
-      <input class="spend-input" type="date" id="si-date-${key}" value="${todayStr}" ${isReadonly?'disabled':''}/>
-    </div>
-    <div class="spend-row-input2">
-      <select class="spend-input" id="si-cat-${key}" style="cursor:pointer;" ${isReadonly?'disabled':''}>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
-      <input class="spend-input right" type="number" id="si-amt-${key}" placeholder="금액" ${isReadonly?'disabled':''}/>
-      <button class="spend-add-btn" onclick="window.addSpend('${key}')" ${isReadonly?'disabled':''}>+</button>
-    </div>
-  </div>`;
-
-  const items=d.spends[key];
-  const listHtml=`<div class="spend-list-card">
-    <div class="spend-list-title">지출 내역</div>
-    ${items.length===0
-      ?'<div class="spend-empty">아직 지출 내역이 없어요</div>'
-      :items.slice().reverse().map(s=>`<div class="spend-item">
-          <span class="spend-date">${s.date.slice(5)}</span>
-          <div class="spend-info">
-            <span class="spend-note-text">${s.note||'—'}</span>
-            <span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]||'#eee'}22;color:${CAT_COLORS[s.cat]||'#888'}">${s.cat}</span>
-          </div>
-          <span class="spend-amount">${s.amount.toLocaleString()}원</span>
-          <button class="icon-btn" onclick="window.rmSpend('${key}',${s.id})" ${isReadonly?'disabled':''}>×</button>
-        </div>`).join('')}
-    <div class="spend-total-row">
-      <span>총 지출</span>
-      <strong class="${spent>budget&&budget>0?'over':''}">${spent.toLocaleString()}원</strong>
-    </div>
-  </div>`;
-
-  const chartHtml=buildDonut(key);
-  document.getElementById('record-content').innerHTML=barHtml+addHtml+chartHtml+listHtml;
+  document.getElementById('record-content').innerHTML=barHtml+addHtml+listHtml;
 }
 
 window.addSpend = function(key){
-  const note=document.getElementById('si-note-'+key)?.value.trim()||'';
-  const dateVal=document.getElementById('si-date-'+key)?.value||TODAY+'-01';
-  const cat=document.getElementById('si-cat-'+key)?.value||'기타';
-  const amt=parseInt(document.getElementById('si-amt-'+key)?.value)||0;
-  if(amt<=0){alert('금액을 입력해주세요');return;}
+  const note=document.getElementById('si-note').value;
+  const date=document.getElementById('si-date').value;
+  const cat=document.getElementById('si-cat').value;
+  const amt=parseInt(document.getElementById('si-amt').value);
+  if(!amt)return;
   if(!d.spends[key])d.spends[key]=[];
-  d.spends[key].push({id:d.spendIdCnt++,date:dateVal,note,cat,amount:amt});
+  d.spends[key].push({id:d.spendIdCnt++,date,note,cat,amount:amt});
   saveData();renderRecordTab();
 }
 window.rmSpend = function(key,id){
@@ -656,164 +609,72 @@ window.rmSpend = function(key,id){
   saveData();renderRecordTab();
 }
 
-function buildDonut(key){
-  if(!d.spends||!d.spends[key]||d.spends[key].length===0)return'';
-  const totals={};
-  d.spends[key].forEach(s=>{totals[s.cat]=(totals[s.cat]||0)+s.amount;});
-  const total=Object.values(totals).reduce((a,b)=>a+b,0);
-  if(total===0)return'';
-  const entries=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
-  const R=50,cx=60,cy=60,sw=20;
-  const circ=2*Math.PI*R;
-  let offset=0;
-  const segs=entries.map(([cat,amt])=>{
-    const pct=amt/total;
-    const da=circ*pct;
-    const seg=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${CAT_COLORS[cat]||'#ccc'}" stroke-width="${sw}" stroke-dasharray="${da} ${circ}" stroke-dashoffset="${-offset*circ}" transform="rotate(-90 ${cx} ${cy})"/>`;
-    offset+=pct;return seg;
-  }).join('');
-  const legend=entries.map(([cat,amt])=>`<div class="legend-item">
-    <span class="legend-dot" style="background:${CAT_COLORS[cat]||'#ccc'}"></span>
-    <span class="legend-name">${cat}</span>
-    <span class="legend-amt">${amt.toLocaleString()}원</span>
-    <span class="legend-pct">${Math.round(amt/total*100)}%</span>
-  </div>`).join('');
-  return`<div class="chart-card">
-    <div class="chart-title">카테고리별 지출</div>
-    <div class="chart-wrap">
-      <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">${segs}</svg>
-      <div class="legend">${legend}</div>
-    </div>
-  </div>`;
-}
-
 function renderAll(){
   const incomeEl = document.getElementById('income');
   if(incomeEl) incomeEl.value=d.income||'';
   renderFixed();renderEnvelopes();renderSliders();renderLeftover();
-  syncPcts();calculate();
-  document.getElementById('merge-result').style.display='none';
-  document.getElementById('save-panel').classList.toggle('open',savePanelOpen);
-  if(savePanelOpen)renderGoals();
+  syncPcts();window.calculate();
   if(mainTab==='record')renderRecordTab();
 }
 window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
 
-/* ── Firebase + PIN 로직 ── */
-const FB_DOC_ID = 'budget_data';
-const PIN_DOC_ID = 'app_pin'; // Firebase에 PIN을 저장할 문서 ID
-let pinBuffer = '';
-let pinMode = 'verify'; 
-let pinFirst = '';
-let unlocked = false;
-
+/* ── PIN 보관함 로그인 로직 (검증 없음, 입력하는 보관함을 무조건 엶) ── */
+let pinBuf = '';
 window.pinInput = function(n) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += n;
-  updateDots();
-  if (pinBuffer.length === 4) {
-    setTimeout(() => handlePin(), 150);
+  if (pinBuf.length >= 4) return;
+  pinBuf += n;
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    if(dot) dot.style.background = i < pinBuf.length ? '#1a1a1a' : '';
   }
+  if (pinBuf.length === 4) setTimeout(loginToBox, 150);
 };
 
 window.pinDelete = function() {
-  pinBuffer = pinBuffer.slice(0, -1);
-  updateDots();
-};
-
-function updateDots() {
+  pinBuf = pinBuf.slice(0, -1);
   for (let i = 0; i < 4; i++) {
     const dot = document.getElementById('dot-' + i);
-    if(dot) {
-        dot.style.background = i < pinBuffer.length ? '#1a1a1a' : '';
-        dot.style.borderColor = i < pinBuffer.length ? '#1a1a1a' : '#ccc';
-    }
+    if(dot) dot.style.background = i < pinBuf.length ? '#1a1a1a' : '';
   }
-}
+};
 
-async function handlePin() {
-  if(!window._dbReady) return;
-  const { doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-  const pinRef = doc(window._db, 'users', PIN_DOC_ID);
-  
-  if (pinMode === 'verify') {
-    const snap = await getDoc(pinRef);
-    if (snap.exists()) {
-      if (snap.data().val === pinBuffer) {
-        // 인증 성공
-        document.getElementById('pin-screen').style.display = 'none';
-        unlocked = true;
-        loadFromFirebase();
-      } else {
-        document.getElementById('pin-error').textContent = '잘못된 PIN이에요';
-        pinBuffer = '';
-        updateDots();
-      }
-    } else {
-      // Firebase에 설정된 PIN이 없으면 새로 설정 모드로 전환
-      pinMode = 'set';
-      pinBuffer = '';
-      updateDots();
-      document.getElementById('pin-title').textContent = 'PIN 설정 (처음 접속)';
-    }
-  } else if (pinMode === 'set') {
-    pinFirst = pinBuffer;
-    pinBuffer = '';
-    updateDots();
-    pinMode = 'confirm';
-    document.getElementById('pin-title').textContent = 'PIN 확인 (한 번 더)';
-  } else if (pinMode === 'confirm') {
-    if (pinBuffer === pinFirst) {
-      // Firebase에 PIN 저장
-      await setDoc(pinRef, { val: pinBuffer });
-      document.getElementById('pin-screen').style.display = 'none';
-      unlocked = true;
-      loadFromFirebase();
-    } else {
-      document.getElementById('pin-error').textContent = 'PIN이 일치하지 않아요';
-      pinBuffer = ''; pinFirst = ''; pinMode = 'set';
-      updateDots();
-      document.getElementById('pin-title').textContent = 'PIN 설정 (4자리)';
-    }
-  }
+async function loginToBox() {
+  userPin = pinBuf; // 입력한 4자리 번호를 보관함 이름으로 사용
+  document.getElementById('pin-screen').style.display = 'none';
+  unlocked = true;
+  await loadFromFirebase();
 }
 
 async function loadFromFirebase() {
-  if (!window._dbReady || !unlocked) return;
+  if (!window._dbReady || !userPin) return;
   try {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snap = await getDoc(doc(window._db, 'users', FB_DOC_ID));
+    const snap = await getDoc(doc(window._db, 'users', userPin)); // PIN 자체가 보관함(문서) ID
     if (snap.exists()) {
-      const remote = snap.data();
-      const local = loadAll();
-      const merged = { ...local, ...remote };
-      localStorage.setItem(SK, JSON.stringify(merged));
+      const remote = snap.data().allData;
+      localStorage.setItem(SK, JSON.stringify(remote));
       d = getData(viewKey);
-      renderAll();
+    } else {
+      // 해당 PIN의 보관함이 서버에 없으면 현재의 로컬 데이터를 해당 PIN으로 새로 시작
+      d = getData(TODAY);
     }
-  } catch(e) { console.log('Firebase load error', e); }
+    renderAll();
+    buildTabs();
+  } catch(e) { console.log('불러오기 에러', e); }
 }
 
 async function saveToFirebase(all) {
-  if (!window._dbReady || !unlocked) return;
+  if (!window._dbReady || !unlocked || !userPin) return;
   try {
     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await setDoc(doc(window._db, 'users', FB_DOC_ID), all);
-  } catch(e) { console.log('Firebase save error', e); }
+    await setDoc(doc(window._db, 'users', userPin), { allData: all });
+  } catch(e) { console.log('저장 에러', e); }
 }
 
-function initApp() {
-  const screen = document.getElementById('pin-screen');
-  if(screen) screen.style.display = 'flex';
-  // 연동을 위해 무조건 verify 모드로 시작하여 Firebase에서 확인하도록 함
-  pinMode = 'verify';
-  document.getElementById('pin-title').textContent = 'PIN 입력';
-}
-
-// 시작
-buildTabs();
-renderAll();
-initApp();
+window.addEventListener('db-ready', () => { 
+  buildTabs(); 
+  renderAll(); 
+});
 </script>
 </body>
 </html>
