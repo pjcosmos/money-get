@@ -417,7 +417,7 @@ window.switchMainTab = function(tab){
   document.getElementById('view-record').style.display=tab==='record'?'block':'none';
   document.getElementById('tab-budget').classList.toggle('active',tab==='budget');
   document.getElementById('tab-record').classList.toggle('active',tab==='record');
-  if(tab==='record')renderRecordTab();
+  if(tab==='record') renderRecordTab();
 }
 
 function buildTabs(){
@@ -428,11 +428,11 @@ function buildTabs(){
 }
 
 window.switchMonth = function(key){
-  viewKey=key;d=getData(key);savePanelOpen=false;
+  viewKey=key; d=getData(key); savePanelOpen=false;
   const ip=key!==TODAY;
   document.getElementById('past-banner').style.display=ip?'flex':'none';
   if(ip)document.getElementById('past-text').textContent=mLabel(key)+' 기록 (읽기 전용)';
-  isReadonly=ip;setRO(ip);
+  isReadonly=ip; setRO(ip);
   renderAll();
 }
 
@@ -504,10 +504,6 @@ function renderGoals(){
   info.textContent='합계 '+total+'%';
   info.className='goal-sum-info'+(total!==100?' over':'');
 }
-window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
-window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
-window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
-window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();saveData();}
 
 function renderSliders(){
   document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" id="sl-${e.key}" oninput="onSlide('${e.key}')"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');
@@ -557,7 +553,8 @@ function calculate(){
   });
 }
 
-/* ── 기록 탭 기능 ── */
+/* ── 기록 탭 복구된 기능 ── */
+const RECORD_ENVS=['life','fun']; 
 function renderRecordEnvTabs(){
   const tabs=RECORD_ENVS.map(key=>{
     const env=d.envelopes.find(e=>e.key===key);
@@ -567,59 +564,96 @@ function renderRecordEnvTabs(){
 }
 window.switchRecordEnv = function(key){activeRecordEnv=key;renderRecordTab();}
 
+function getRecordBudget(key){
+  const inc=parseInt(document.getElementById('income')?.value)||0;
+  const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
+  const av=Math.max(0,inc-fix);
+  const tot=d.envelopes.reduce((s,e)=>s+e.pct,0);
+  const env=d.envelopes.find(e=>e.key===key);
+  if(!env||tot===0||av===0)return 0;
+  return Math.round(av*(env.pct/tot)/100)*100;
+}
+
 function renderRecordTab(){
   renderRecordEnvTabs();
   const key=activeRecordEnv;
-  if(!d.spends[key])d.spends[key]=[];
-  // ... (지출 기록 렌더링 로직 생략 없이 진아님 원본 유지 권장)
-  document.getElementById('record-content').innerHTML = `<p style="padding:20px; color:#aaa; font-size:13px; text-align:center;">지출 내역을 불러오고 있습니다...</p>`;
-  setTimeout(()=> {
-      // 기록 탭의 상세 내용은 원본 로직대로 다시 렌더링됩니다.
-      const budget = (function(){
-          const inc=parseInt(document.getElementById('income')?.value)||0;
-          const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
-          const av=Math.max(0,inc-fix);
-          const tot=d.envelopes.reduce((s,e)=>s+e.pct,0);
-          const env=d.envelopes.find(e=>e.key===key);
-          return (env && tot>0) ? Math.round(av*(env.pct/tot)/100)*100 : 0;
-      })();
-      const spent = d.spends[key].reduce((s,sp)=>s+sp.amount,0);
-      const pct = budget>0 ? Math.min(100, Math.round(spent/budget*100)) : 0;
-      
-      let listHtml = d.spends[key].slice().reverse().map(s=>`
-        <div class="spend-item">
-          <span class="spend-date">${s.date.slice(5)}</span>
-          <div class="spend-info"><span class="spend-note-text">${s.note}</span><span class="spend-cat-badge" style="background:#eee;">${s.cat}</span></div>
-          <span class="spend-amount">${s.amount.toLocaleString()}원</span>
-          <button class="icon-btn" onclick="rmSpend('${key}',${s.id})">×</button>
-        </div>`).join('');
+  if(!d.spends) d.spends = {life:[], fun:[]};
+  if(!d.spends[key]) d.spends[key]=[];
+  const budget = getRecordBudget(key);
+  const spent = d.spends[key].reduce((s,sp)=>s+sp.amount,0);
+  const remaining = budget - spent;
+  const pct = budget>0 ? Math.min(100, Math.round(spent/budget*100)) : 0;
 
-      document.getElementById('record-content').innerHTML = `
-        <div class="budget-bar-wrap">
-          <div class="budget-bar-labels"><span>예산 <strong>${budget.toLocaleString()}원</strong></span><span>${spent.toLocaleString()}원 사용</span></div>
-          <div class="budget-bar-bg"><div class="budget-bar-fill" style="width:${pct}%"></div></div>
-        </div>
-        <div class="spend-add-card">
-            <input class="spend-input" type="text" id="si-note-${key}" placeholder="내용" style="margin-bottom:5px"/>
-            <div style="display:flex; gap:5px">
-                <input class="spend-input" type="number" id="si-amt-${key}" placeholder="금액" style="flex:1"/>
-                <button class="spend-add-btn" onclick="addSpend('${key}')">+</button>
-            </div>
-        </div>
-        <div class="spend-list-card">${listHtml || '<div class="spend-empty">내역 없음</div>'}</div>`;
-  }, 10);
+  const barHtml = `
+    <div class="budget-bar-wrap">
+      <div class="budget-bar-labels">
+        <span>예산 <strong>${budget.toLocaleString()}원</strong></span>
+        <span class="${spent>budget?'over-label':''}">${spent.toLocaleString()}원 사용 · 남은 돈 ${remaining.toLocaleString()}원</span>
+      </div>
+      <div class="budget-bar-bg"><div class="budget-bar-fill ${spent>budget?'over':''}" style="width:${pct}%"></div></div>
+    </div>`;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const addHtml = `
+    <div class="spend-add-card">
+      <div class="spend-add-title">지출 추가</div>
+      <div class="spend-row-input">
+        <input class="spend-input" type="text" id="si-note-${key}" placeholder="내용" ${isReadonly?'disabled':''}/>
+        <input class="spend-input" type="date" id="si-date-${key}" value="${todayStr}" ${isReadonly?'disabled':''}/>
+      </div>
+      <div class="spend-row-input2">
+        <select class="spend-input" id="si-cat-${key}" ${isReadonly?'disabled':''}>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+        <input class="spend-input right" type="number" id="si-amt-${key}" placeholder="금액" ${isReadonly?'disabled':''}/>
+        <button class="spend-add-btn" onclick="addSpend('${key}')" ${isReadonly?'disabled':''}>+</button>
+      </div>
+    </div>`;
+
+  const listHtml = `
+    <div class="spend-list-card">
+      <div class="spend-list-title">지출 내역</div>
+      ${d.spends[key].length===0 ? '<div class="spend-empty">내역 없음</div>' : 
+        d.spends[key].slice().reverse().map(s=>`
+          <div class="spend-item">
+            <span class="spend-date">${s.date.slice(5)}</span>
+            <div class="spend-info"><span class="spend-note-text">${s.note}</span><span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]}22; color:${CAT_COLORS[s.cat]}">${s.cat}</span></div>
+            <span class="spend-amount">${s.amount.toLocaleString()}원</span>
+            <button class="icon-btn" onclick="rmSpend('${key}',${s.id})" ${isReadonly?'disabled':''}>×</button>
+          </div>`).join('')}
+    </div>`;
+
+  document.getElementById('record-content').innerHTML = barHtml + addHtml + buildDonut(key) + listHtml;
 }
 
 window.addSpend = function(key){
-  const note=document.getElementById('si-note-'+key).value;
+  const note=document.getElementById('si-note-'+key).value.trim();
+  const dateVal=document.getElementById('si-date-'+key).value;
+  const cat=document.getElementById('si-cat-'+key).value;
   const amt=parseInt(document.getElementById('si-amt-'+key).value)||0;
   if(amt<=0) return;
-  d.spends[key].push({id:d.spendIdCnt++, date:new Date().toISOString().split('T')[0], note, cat:'기타', amount:amt});
+  d.spends[key].push({id:d.spendIdCnt++, date:dateVal, note, cat, amount:amt});
   saveData(); renderRecordTab();
 }
 window.rmSpend = function(key,id){
   d.spends[key]=d.spends[key].filter(s=>s.id!==id);
   saveData(); renderRecordTab();
+}
+
+function buildDonut(key){
+  if(!d.spends[key] || d.spends[key].length===0) return '';
+  const totals={};
+  d.spends[key].forEach(s=>{totals[s.cat]=(totals[s.cat]||0)+s.amount;});
+  const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const entries=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const R=50,cx=60,cy=60,sw=20,circ=2*Math.PI*R;
+  let offset=0;
+  const segs=entries.map(([cat,amt])=>{
+    const pct=amt/total; const da=circ*pct;
+    const seg=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${CAT_COLORS[cat]}" stroke-width="${sw}" stroke-dasharray="${da} ${circ}" stroke-dashoffset="${-offset*circ}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=pct; return seg;
+  }).join('');
+  const legend=entries.map(([cat,amt])=>`
+    <div class="legend-item"><span class="legend-dot" style="background:${CAT_COLORS[cat]}"></span><span class="legend-name">${cat}</span><span class="legend-amt">${amt.toLocaleString()}원</span><span class="legend-pct">${Math.round(amt/total*100)}%</span></div>`).join('');
+  return `<div class="chart-card"><div class="chart-title">카테고리별 지출</div><div class="chart-wrap"><svg width="120" height="120" viewBox="0 0 120 120">${segs}</svg><div class="legend">${legend}</div></div></div>`;
 }
 
 function renderAll(){
@@ -630,7 +664,7 @@ function renderAll(){
 }
 window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
 
-/* ── Firebase + PIN 로직 (수정 완료) ── */
+/* ── Firebase + PIN ── */
 let currentPin = ''; 
 const PIN_KEY = 'app_pin';
 let pinBuffer = '';
@@ -642,9 +676,7 @@ window.pinInput = function(n) {
   if (pinBuffer.length >= 4) return;
   pinBuffer += n;
   updateDots();
-  if (pinBuffer.length === 4) {
-    setTimeout(() => handlePin(), 150);
-  }
+  if (pinBuffer.length === 4) setTimeout(() => handlePin(), 150);
 };
 
 window.pinDelete = function() {
@@ -665,7 +697,7 @@ function updateDots() {
 function handlePin() {
   if (pinMode === 'verify') {
     currentPin = pinBuffer; 
-    localStorage.removeItem(SK); // 이전 세션 로컬 데이터 삭제
+    localStorage.removeItem(SK);
     unlocked = true; 
     document.getElementById('pin-screen').style.display = 'none';
     localStorage.setItem(PIN_KEY, currentPin); 
@@ -730,7 +762,6 @@ function initApp() {
   }
 }
 
-// 시작
 buildTabs();
 initApp();
 </script>
