@@ -349,6 +349,8 @@ let mainTab='budget';
 let activeRecordEnv='life';
 let savePanelOpen=false;
 let isReadonly=false;
+let unlocked = false;
+let currentPin = '';
 
 const CAT_COLORS={'식당':'#D85A30','카페':'#BA7517','마트':'#1D9E75','교통':'#185FA5','쇼핑':'#534AB7','문화':'#993556','기타':'#888780'};
 const CATS=Object.keys(CAT_COLORS);
@@ -417,7 +419,7 @@ window.switchMainTab = function(tab){
   document.getElementById('view-record').style.display=tab==='record'?'block':'none';
   document.getElementById('tab-budget').classList.toggle('active',tab==='budget');
   document.getElementById('tab-record').classList.toggle('active',tab==='record');
-  if(tab==='record') renderRecordTab();
+  if(tab==='record')renderRecordTab();
 }
 
 function buildTabs(){
@@ -428,11 +430,11 @@ function buildTabs(){
 }
 
 window.switchMonth = function(key){
-  viewKey=key; d=getData(key); savePanelOpen=false;
+  viewKey=key;d=getData(key);savePanelOpen=false;
   const ip=key!==TODAY;
   document.getElementById('past-banner').style.display=ip?'flex':'none';
   if(ip)document.getElementById('past-text').textContent=mLabel(key)+' 기록 (읽기 전용)';
-  isReadonly=ip; setRO(ip);
+  isReadonly=ip;setRO(ip);
   renderAll();
 }
 
@@ -442,7 +444,7 @@ function setRO(on){
   document.querySelectorAll('.fixed-input,.icon-btn,.env-name-input,input[type=range],.leftover-input,.goal-name-input,.spend-input,.spend-add-btn').forEach(el=>el.disabled=on);
 }
 
-/* ── 예산 기능들 ── */
+/* ── 고정지출 ── */
 function renderFixed(){
   document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="rmFixed(${f.id})">×</button></div>`).join('');
   updFSum();
@@ -453,6 +455,7 @@ window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();
 window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();calculate();saveData();}
 function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);document.getElementById('fixed-sum').textContent='합계 '+s.toLocaleString()+'원';}
 
+/* ── 봉투 ── */
 function renderEnvelopes(){
   document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`
     <div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="toggleSavePanel()" style="cursor:pointer;"':''}>
@@ -504,6 +507,10 @@ function renderGoals(){
   info.textContent='합계 '+total+'%';
   info.className='goal-sum-info'+(total!==100?' over':'');
 }
+window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
+window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
+window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
+window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();saveData();}
 
 function renderSliders(){
   document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" id="sl-${e.key}" oninput="onSlide('${e.key}')"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');
@@ -534,7 +541,17 @@ window.mergeLeftover = function(){
   if(savePanelOpen)renderGoals();
 }
 
-function calculate(){
+function getBudgetAmt(key){
+  const inc=parseInt(document.getElementById('income')?.value)||0;
+  const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
+  const av=Math.max(0,inc-fix);
+  const tot=d.envelopes.reduce((s,e)=>s+e.pct,0);
+  const env=d.envelopes.find(e=>e.key===key);
+  if(!env||tot===0||av===0)return 0;
+  return Math.round(av*(env.pct/tot)/100)*100;
+}
+
+window.calculate = function(){
   const incEl = document.getElementById('income');
   const inc=parseInt(incEl ? incEl.value : 0)||0;
   const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
@@ -553,7 +570,7 @@ function calculate(){
   });
 }
 
-/* ── 기록 탭 복구된 기능 ── */
+/* ── 기록 탭 ── */
 const RECORD_ENVS=['life','fun']; 
 function renderRecordEnvTabs(){
   const tabs=RECORD_ENVS.map(key=>{
@@ -564,22 +581,13 @@ function renderRecordEnvTabs(){
 }
 window.switchRecordEnv = function(key){activeRecordEnv=key;renderRecordTab();}
 
-function getRecordBudget(key){
-  const inc=parseInt(document.getElementById('income')?.value)||0;
-  const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
-  const av=Math.max(0,inc-fix);
-  const tot=d.envelopes.reduce((s,e)=>s+e.pct,0);
-  const env=d.envelopes.find(e=>e.key===key);
-  if(!env||tot===0||av===0)return 0;
-  return Math.round(av*(env.pct/tot)/100)*100;
-}
-
 function renderRecordTab(){
   renderRecordEnvTabs();
   const key=activeRecordEnv;
   if(!d.spends) d.spends = {life:[], fun:[]};
   if(!d.spends[key]) d.spends[key]=[];
-  const budget = getRecordBudget(key);
+  
+  const budget = getBudgetAmt(key);
   const spent = d.spends[key].reduce((s,sp)=>s+sp.amount,0);
   const remaining = budget - spent;
   const pct = budget>0 ? Math.min(100, Math.round(spent/budget*100)) : 0;
@@ -611,14 +619,21 @@ function renderRecordTab(){
   const listHtml = `
     <div class="spend-list-card">
       <div class="spend-list-title">지출 내역</div>
-      ${d.spends[key].length===0 ? '<div class="spend-empty">내역 없음</div>' : 
+      ${d.spends[key].length===0 ? '<div class="spend-empty">아직 지출 내역이 없어요</div>' : 
         d.spends[key].slice().reverse().map(s=>`
           <div class="spend-item">
             <span class="spend-date">${s.date.slice(5)}</span>
-            <div class="spend-info"><span class="spend-note-text">${s.note}</span><span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]}22; color:${CAT_COLORS[s.cat]}">${s.cat}</span></div>
+            <div class="spend-info">
+              <span class="spend-note-text">${s.note||'—'}</span>
+              <span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]}22; color:${CAT_COLORS[s.cat]}">${s.cat}</span>
+            </div>
             <span class="spend-amount">${s.amount.toLocaleString()}원</span>
             <button class="icon-btn" onclick="rmSpend('${key}',${s.id})" ${isReadonly?'disabled':''}>×</button>
           </div>`).join('')}
+      <div class="spend-total-row">
+        <span>총 지출</span>
+        <strong class="${spent>budget?'over':''}">${spent.toLocaleString()}원</strong>
+      </div>
     </div>`;
 
   document.getElementById('record-content').innerHTML = barHtml + addHtml + buildDonut(key) + listHtml;
@@ -629,10 +644,11 @@ window.addSpend = function(key){
   const dateVal=document.getElementById('si-date-'+key).value;
   const cat=document.getElementById('si-cat-'+key).value;
   const amt=parseInt(document.getElementById('si-amt-'+key).value)||0;
-  if(amt<=0) return;
+  if(amt<=0) {alert('금액을 입력해주세요'); return;}
   d.spends[key].push({id:d.spendIdCnt++, date:dateVal, note, cat, amount:amt});
   saveData(); renderRecordTab();
 }
+
 window.rmSpend = function(key,id){
   d.spends[key]=d.spends[key].filter(s=>s.id!==id);
   saveData(); renderRecordTab();
@@ -643,6 +659,7 @@ function buildDonut(key){
   const totals={};
   d.spends[key].forEach(s=>{totals[s.cat]=(totals[s.cat]||0)+s.amount;});
   const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  if(total===0) return '';
   const entries=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
   const R=50,cx=60,cy=60,sw=20,circ=2*Math.PI*R;
   let offset=0;
@@ -652,25 +669,30 @@ function buildDonut(key){
     offset+=pct; return seg;
   }).join('');
   const legend=entries.map(([cat,amt])=>`
-    <div class="legend-item"><span class="legend-dot" style="background:${CAT_COLORS[cat]}"></span><span class="legend-name">${cat}</span><span class="legend-amt">${amt.toLocaleString()}원</span><span class="legend-pct">${Math.round(amt/total*100)}%</span></div>`).join('');
-  return `<div class="chart-card"><div class="chart-title">카테고리별 지출</div><div class="chart-wrap"><svg width="120" height="120" viewBox="0 0 120 120">${segs}</svg><div class="legend">${legend}</div></div></div>`;
+    <div class="legend-item">
+      <span class="legend-dot" style="background:${CAT_COLORS[cat]}"></span>
+      <span class="legend-name">${cat}</span>
+      <span class="legend-amt">${amt.toLocaleString()}원</span>
+      <span class="legend-pct">${Math.round(amt/total*100)}%</span>
+    </div>`).join('');
+  return `<div class="chart-card"><div class="chart-title">카테고리별 지출</div><div class="chart-wrap"><svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">${segs}</svg><div class="legend">${legend}</div></div></div>`;
 }
 
 function renderAll(){
   const incomeEl = document.getElementById('income');
   if(incomeEl) incomeEl.value=d.income||'';
-  renderFixed(); renderEnvelopes(); renderSliders(); renderLeftover();
+  renderFixed();renderEnvelopes();renderSliders();renderLeftover();
   calculate();
+  document.getElementById('merge-result').style.display='none';
 }
+
 window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
 
 /* ── Firebase + PIN ── */
-let currentPin = ''; 
 const PIN_KEY = 'app_pin';
 let pinBuffer = '';
 let pinMode = 'verify'; 
 let pinFirst = '';
-let unlocked = false;
 
 window.pinInput = function(n) {
   if (pinBuffer.length >= 4) return;
@@ -697,7 +719,7 @@ function updateDots() {
 function handlePin() {
   if (pinMode === 'verify') {
     currentPin = pinBuffer; 
-    localStorage.removeItem(SK);
+    localStorage.removeItem(SK); // 기기간 간섭 방지 초기화
     unlocked = true; 
     document.getElementById('pin-screen').style.display = 'none';
     localStorage.setItem(PIN_KEY, currentPin); 
@@ -765,7 +787,5 @@ function initApp() {
 buildTabs();
 initApp();
 </script>
-
-
 </body>
 </html>
