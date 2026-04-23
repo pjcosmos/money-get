@@ -412,7 +412,6 @@ function saveData(){
   const all=loadAll();all[TODAY]=d;saveAll(all);
 }
 
-/* ── 메인 탭 전환 ── */
 window.switchMainTab = function(tab){
   mainTab=tab;
   document.getElementById('view-budget').style.display=tab==='budget'?'block':'none';
@@ -444,7 +443,6 @@ function setRO(on){
   document.querySelectorAll('.fixed-input,.icon-btn,.env-name-input,input[type=range],.leftover-input,.goal-name-input,.spend-input,.spend-add-btn').forEach(el=>el.disabled=on);
 }
 
-/* ── 고정지출 ── */
 function renderFixed(){
   document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="rmFixed(${f.id})">×</button></div>`).join('');
   updFSum();
@@ -455,8 +453,9 @@ window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();
 window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();calculate();saveData();}
 function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);document.getElementById('fixed-sum').textContent='합계 '+s.toLocaleString()+'원';}
 
-/* ── 봉투 ── */
+/* ── 봉투 렌더링 ── */
 function renderEnvelopes(){
+  // 핵심: calculate()에서 계산된 금액들을 보존하기 위해 renderEnvelopes는 구조만 잡고 금액은 calculate에서 채웁니다.
   document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`
     <div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="toggleSavePanel()" style="cursor:pointer;"':''}>
       <div class="env-flap"><svg viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -472,36 +471,38 @@ function renderEnvelopes(){
         ${e.key==='save'?`<div style="font-size:10px;color:#ccc;margin-top:4px;">${savePanelOpen?'▲':'▼'} 세부 목표</div>`:''}
       </div>
     </div>`).join('');
+  calculate(); // 렌더링 직후 금액 바로 계산해서 채워넣기
 }
+
 window.updEnv = function(i,v){
   d.envelopes[i].name=v;
   saveData();renderRecordEnvTabs();
 }
 
-/* ── 저축 패널 (금액 유지 핵심 수정) ── */
 window.toggleSavePanel = function(){
   if(isReadonly)return;
   savePanelOpen=!savePanelOpen;
   document.getElementById('save-panel').classList.toggle('open',savePanelOpen);
   
-  // 패널을 열고 닫을 때 현재 분배된 금액을 강제로 다시 계산하여 유지시킵니다.
-  calculate(); 
-  renderEnvelopes();
+  // 패널 상태에 따라 화살표 모양 등을 갱신하기 위해 renderEnvelopes 재호출 (내부에서 calculate도 실행됨)
+  renderEnvelopes(); 
   if(savePanelOpen) renderGoals();
 }
 
 function renderGoals(){
-  if(!d.saveGoals)d.saveGoals=defData().saveGoals;
-  const saveAmtEl=document.getElementById('ea-save');
-  // 화면에 표시된 금액에서 숫자만 추출
-  const saveAmtText = saveAmtEl ? saveAmtEl.textContent.replace(/[^0-9]/g,'') : '';
+  if(!d.saveGoals) d.saveGoals=defData().saveGoals;
+  
+  // calculate()에 의해 이미 채워진 저축 봉투의 금액을 가져옴
+  const saveAmtEl = document.getElementById('ea-save');
+  const saveAmtText = (saveAmtEl && !saveAmtEl.classList.contains('empty')) ? saveAmtEl.textContent.replace(/[^0-9]/g,'') : '';
   const saveAmt = saveAmtText !== '' ? parseInt(saveAmtText) : 0;
   
-  document.getElementById('save-total-amt').textContent=saveAmt>0?saveAmt.toLocaleString()+'원':'—';
-  const total=d.saveGoals.reduce((s,g)=>s+g.pct,0);
-  document.getElementById('goal-list').innerHTML=d.saveGoals.map(g=>{
-    const amt=saveAmt>0?Math.round(saveAmt*(g.pct/100)/100)*100:0;
-    return`<div class="goal-item"><div class="goal-top">
+  document.getElementById('save-total-amt').textContent = saveAmt > 0 ? saveAmt.toLocaleString()+'원' : '—';
+  const total = d.saveGoals.reduce((s,g)=>s+g.pct, 0);
+  
+  document.getElementById('goal-list').innerHTML = d.saveGoals.map(g => {
+    const amt = saveAmt > 0 ? Math.round(saveAmt * (g.pct/100) / 100) * 100 : 0;
+    return `<div class="goal-item"><div class="goal-top">
       <input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="gName(${g.id},this.value)"/>
       <div class="goal-amt ${amt===0?'empty':''}">${amt>0?amt.toLocaleString()+'원':'—'}</div>
       <button class="icon-btn" onclick="rmGoal(${g.id})">×</button>
@@ -510,9 +511,10 @@ function renderGoals(){
       <span class="goal-pct">${g.pct}%</span>
     </div></div>`;
   }).join('');
-  const info=document.getElementById('goal-sum-info');
-  info.textContent='합계 '+total+'%';
-  info.className='goal-sum-info'+(total!==100?' over':'');
+  
+  const info = document.getElementById('goal-sum-info');
+  info.textContent = '합계 ' + total + '%';
+  info.className = 'goal-sum-info' + (total !== 100 ? ' over' : '');
 }
 
 window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
@@ -538,6 +540,7 @@ window.updMSum = function(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(docume
 window.mergeLeftover = function(){
   const total=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);
   if(total<=0){alert('남은 금액을 입력해주세요');return;}
+  calculate(); // 현재 베이스 금액 확보
   const el=document.getElementById('ea-save');
   const cur=parseInt((el.textContent||'0').replace(/[^0-9]/g,''))||0;
   const next=cur+total;
@@ -546,7 +549,7 @@ window.mergeLeftover = function(){
   document.getElementById('merge-sum').textContent='0원';
   const res=document.getElementById('merge-result');
   res.style.display='block'; res.textContent=total.toLocaleString()+'원이 저축에 합산됐어요.';
-  if(savePanelOpen)renderGoals();
+  if(savePanelOpen) renderGoals();
 }
 
 function getBudgetAmt(key){
@@ -572,10 +575,15 @@ window.calculate = function(){
     const r=tot>0?e.pct/tot:0;
     const amt=av>0?Math.round(av*r/100)*100:0;
     const aEl=document.getElementById('ea-'+e.key);
-    if(aEl){if(av>0){aEl.textContent=amt.toLocaleString()+'원';aEl.classList.remove('empty');}else{aEl.textContent='—';aEl.classList.add('empty');}}
+    if(aEl){
+      if(av>0){aEl.textContent=amt.toLocaleString()+'원';aEl.classList.remove('empty');}
+      else{aEl.textContent='—';aEl.classList.add('empty');}
+    }
     const pEl=document.getElementById('ep-'+e.key);if(pEl)pEl.textContent=e.pct+'%';
     if(e.showDaily){const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 약 '+Math.round(amt/30).toLocaleString()+'원':'';}
   });
+  // 저축 목표 패널이 열려있다면 해당 금액도 즉시 동기화
+  if(savePanelOpen) renderGoals();
 }
 
 /* ── 기록 탭 ── */
@@ -690,8 +698,7 @@ function renderAll(){
   const incomeEl = document.getElementById('income');
   if(incomeEl) incomeEl.value=d.income||'';
   renderFixed();renderEnvelopes();renderSliders();renderLeftover();
-  calculate();
-  document.getElementById('merge-result').style.display='none';
+  // renderEnvelopes 내부에 calculate가 포함되어 있으므로 별도 호출 생략 가능
 }
 
 window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);localStorage.removeItem(PIN_KEY);location.reload();}
@@ -766,6 +773,7 @@ async function loadFromFirebase() {
     } else {
       localStorage.setItem(SK, JSON.stringify({}));
     }
+    unlocked = true; // 데이터를 가져온 후 확실히 잠금 해제 상태 유지
     d = getData(viewKey);
     renderAll();
   } catch(e) { console.log('Firebase load error', e); }
