@@ -188,11 +188,9 @@
     .reset-btn{font-size:11px;color:#ccc;background:none;border:none;cursor:pointer;padding:0;margin-top:24px;display:block;width:100%;text-align:center;}
     .reset-btn:hover{color:#e05a2b;}
   </style>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
     const firebaseConfig = {
       apiKey: "AIzaSyBsDuY3FLmvXmsIgZgmtCu79eondhZfy_k",
       authDomain: "money-get-d3451.firebaseapp.com",
@@ -201,7 +199,6 @@
       messagingSenderId: "692925819247",
       appId: "1:692925819247:web:e59b179a502c4f456f609a"
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     window._db = db;
@@ -215,100 +212,32 @@
     <p class="page-title">돈을 모으쟈</p>
     <span class="save-indicator"><span class="save-dot" id="save-dot"></span><span id="save-label">저장 안 됨</span></span>
   </div>
-
   <div class="month-tabs" id="month-tabs"></div>
-
-  <div class="past-banner" id="past-banner">
-    <span id="past-text"></span>
-    <button onclick="window.goCurrentMonth()">이번 달로 돌아가기</button>
-  </div>
-
+  <div class="past-banner" id="past-banner"><span id="past-text"></span><button onclick="window.goCurrentMonth()">이번 달로 돌아가기</button></div>
   <div class="main-tabs">
     <div class="main-tab active" id="tab-budget" onclick="window.switchMainTab('budget')">예산</div>
     <div class="main-tab" id="tab-record" onclick="window.switchMainTab('record')">기록</div>
   </div>
-
   <div id="view-budget">
-    <div class="section">
-      <div class="section-label">수입</div>
-      <div class="card">
-        <div class="income-row">
-          <div class="income-wrap"><span>₩</span><input type="number" id="income" placeholder="이번 달 수입" oninput="calculate();saveData();"/></div>
-          <button class="go-btn" id="go-btn" onclick="calculate()">분배</button>
-        </div>
-        <div class="available-row" id="available-row"><span>봉투에 넣을 돈</span><strong id="available-amt">0원</strong></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-label">고정 지출</div>
-      <div class="card">
-        <div id="fixed-list"></div>
-        <div class="fixed-footer">
-          <button class="add-btn" id="add-btn" onclick="window.addFixed()">+ 항목 추가</button>
-          <span class="fixed-sum" id="fixed-sum">합계 0원</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-label">봉투 <span style="color:#ccc;font-size:10px;">이름 클릭해서 수정 가능해요</span></div>
-      <div class="envelopes" id="envelopes"></div>
-      <div class="save-panel" id="save-panel">
-        <div class="panel-header">
-          <span class="panel-title" id="save-panel-title">저축 세부 목표</span>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span class="panel-meta">총 <strong id="save-total-amt">—</strong></span>
-            <button class="close-btn" onclick="window.toggleSavePanel()">×</button>
-          </div>
-        </div>
-        <div class="goal-list" id="goal-list"></div>
-        <div class="goal-footer">
-          <button class="add-goal-btn" id="add-goal-btn" onclick="window.addGoal()">+ 목표 추가</button>
-          <span class="goal-sum-info" id="goal-sum-info">합계 100%</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-label">비율 조정</div>
-      <div class="card">
-        <div id="slider-rows"></div>
-        <div id="warn" class="warn">합계가 100%를 넘었어요</div>
-        <div class="sl-footer"><span>합계</span><strong id="total-pct">100%</strong></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-label">월말 남은 돈 → 저축 합산</div>
-      <div class="card">
-        <div id="leftover-rows"></div>
-        <div class="merge-row">
-          <span class="merge-total">합산 금액 <strong id="merge-sum">0원</strong></span>
-          <button class="merge-btn" id="merge-btn" onclick="window.mergeLeftover()">저축에 합산</button>
-        </div>
-        <div class="merge-result" id="merge-result"></div>
-      </div>
-    </div>
+    <div class="section"><div class="section-label">수입</div><div class="card"><div class="income-row"><div class="income-wrap"><span>₩</span><input type="number" id="income" placeholder="이번 달 수입" oninput="window.calculate();window.saveData();"/></div><button class="go-btn" id="go-btn" onclick="window.calculate()">분배</button></div><div class="available-row" id="available-row"><span>봉투에 넣을 돈</span><strong id="available-amt">0원</strong></div></div></div>
+    <div class="section"><div class="section-label">고정 지출</div><div class="card"><div id="fixed-list"></div><div class="fixed-footer"><button class="add-btn" id="add-btn" onclick="window.addFixed()">+ 항목 추가</button><span class="fixed-sum" id="fixed-sum">합계 0원</span></div></div></div>
+    <div class="section"><div class="section-label">봉투 <span style="color:#ccc;font-size:10px;">이름 클릭해서 수정 가능해요</span></div><div class="envelopes" id="envelopes"></div><div class="save-panel" id="save-panel"><div class="panel-header"><span class="panel-title" id="save-panel-title">저축 세부 목표</span><div style="display:flex;align-items:center;gap:12px;"><span class="panel-meta">총 <strong id="save-total-amt">—</strong></span><button class="close-btn" onclick="window.toggleSavePanel()">×</button></div></div><div class="goal-list" id="goal-list"></div><div class="goal-footer"><button class="add-goal-btn" id="add-goal-btn" onclick="window.addGoal()">+ 목표 추가</button><span class="goal-sum-info" id="goal-sum-info">합계 100%</span></div></div></div>
+    <div class="section"><div class="section-label">비율 조정</div><div class="card"><div id="slider-rows"></div><div id="warn" class="warn">합계가 100%를 넘었어요</div><div class="sl-footer"><span>합계</span><strong id="total-pct">100%</strong></div></div></div>
+    <div class="section"><div class="section-label">월말 남은 돈 → 저축 합산</div><div class="card"><div id="leftover-rows"></div><div class="merge-row"><span class="merge-total">합산 금액 <strong id="merge-sum">0원</strong></span><button class="merge-btn" id="merge-btn" onclick="window.mergeLeftover()">저축에 합산</button></div><div class="merge-result" id="merge-result"></div></div></div>
   </div>
-
-  <div id="view-record" style="display:none;">
-    <div class="record-env-tabs" id="record-env-tabs"></div>
-    <div id="record-content"></div>
-  </div>
-
+  <div id="view-record" style="display:none;"><div class="record-env-tabs" id="record-env-tabs"></div><div id="record-content"></div></div>
   <button class="reset-btn" onclick="window.resetAll()">초기화</button>
 </div>
 
 <div id="pin-screen" style="display:flex;position:fixed;inset:0;background:#f5f5f3;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
-  <p style="font-size:17px;font-weight:500;color:#1a1a1a;" id="pin-title">PIN 번호로 보관함 열기</p>
+  <p style="font-size:17px;font-weight:500;color:#1a1a1a;" id="pin-title">PIN 번호 입력</p>
   <div style="display:flex;gap:12px;" id="pin-dots">
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-0"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-1"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-2"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-3"></div>
   </div>
-  <p style="font-size:12px;color:#aaa;">번호를 입력하면 기기 내역이 연동됩니다.</p>
+  <p style="font-size:12px;color:#aaa;">번호를 입력하면 보관함이 연동됩니다.</p>
   <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
     <button onclick="window.pinInput('1')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">1</button>
     <button onclick="window.pinInput('2')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">2</button>
@@ -336,8 +265,9 @@ let mainTab='budget';
 let activeRecordEnv='life';
 let savePanelOpen=false;
 let isReadonly=false;
-let userPin = ''; 
 let unlocked = false;
+let userPin = '';
+let d = {};
 
 const CAT_COLORS={'식당':'#D85A30','카페':'#BA7517','마트':'#1D9E75','교통':'#185FA5','쇼핑':'#534AB7','문화':'#993556','기타':'#888780'};
 const CATS=Object.keys(CAT_COLORS);
@@ -346,30 +276,30 @@ function defData(){
   return{income:'',envelopes:[{key:'save',name:'저축',pct:50,isMain:true},{key:'life',name:'생활비',pct:30,showDaily:true},{key:'fun',name:'여가',pct:10},{key:'emer',name:'비상금',pct:10}],fixedItems:[{id:1,name:'통신비',amount:0},{id:2,name:'OTT',amount:0},{id:3,name:'교통비',amount:0}],fixedIdCnt:4,saveGoals:[{id:1,name:'주식',pct:50},{id:2,name:'여행',pct:30},{id:3,name:'기타',pct:20}],goalIdCnt:4,spends:{life:[],fun:[]},spendIdCnt:1};
 }
 
-function loadAll(){try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};}}
-function saveAll(all){
-  localStorage.setItem(SK,JSON.stringify(all));
-  document.getElementById('save-dot').classList.add('saved');
-  document.getElementById('save-label').textContent='저장됨';
-  saveToFirebase(all);
-}
+function loadLocalAll(){try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};}}
 
 function getData(key){
-  const all=loadAll();
-  if(all[key])return all[key];
-  const keys=Object.keys(all).sort();
-  const prev=keys.filter(k=>k<key).pop();
-  if(prev){const p=all[prev];return{income:'',envelopes:p.envelopes.map(e=>({...e})),fixedItems:p.fixedItems.map(f=>({...f})),fixedIdCnt:p.fixedIdCnt,saveGoals:(p.saveGoals||[]).map(g=>({...g})),goalIdCnt:p.goalIdCnt||4,spends:{life:[],fun:[]},spendIdCnt:1};}
+  const all = loadLocalAll();
+  if(all[key]) return all[key];
+  const keys = Object.keys(all).sort();
+  const prev = keys.filter(k=>k<key).pop();
+  if(prev){
+    const p=all[prev];
+    return{income:'',envelopes:p.envelopes.map(e=>({...e})),fixedItems:p.fixedItems.map(f=>({...f})),fixedIdCnt:p.fixedIdCnt,saveGoals:(p.saveGoals||[]).map(g=>({...g})),goalIdCnt:p.goalIdCnt||4,spends:{life:[],fun:[]},spendIdCnt:1};
+  }
   return defData();
 }
 
-let d=getData(TODAY);
-
-function saveData(){
+window.saveData = function(){
   if(!unlocked || viewKey!==TODAY)return;
-  const incomeEl = document.getElementById('income');
-  if(incomeEl) d.income = incomeEl.value;
-  const all=loadAll();all[TODAY]=d;saveAll(all);
+  const incEl = document.getElementById('income');
+  if(incEl) d.income = incEl.value;
+  const all = loadLocalAll();
+  all[TODAY] = d;
+  localStorage.setItem(SK, JSON.stringify(all));
+  document.getElementById('save-dot').classList.add('saved');
+  document.getElementById('save-label').textContent='저장됨';
+  saveToFirebase(all);
 }
 
 window.switchMainTab = function(tab){
@@ -382,14 +312,15 @@ window.switchMainTab = function(tab){
 }
 
 function buildTabs(){
-  const all=loadAll();const ks=new Set(Object.keys(all));ks.add(TODAY);
+  const all = loadLocalAll();
+  const ks = new Set(Object.keys(all));ks.add(TODAY);
   for(let i=5;i>=0;i--){const t=new Date(now.getFullYear(),now.getMonth()-i,1);ks.add(mKey(t.getFullYear(),t.getMonth()));}
   const sorted=[...ks].filter(k=>k<=TODAY).sort();
   document.getElementById('month-tabs').innerHTML=sorted.map(k=>`<button class="month-tab ${k===viewKey?'active':''}" onclick="window.switchMonth('${k}')">${mLabel(k)}</button>`).join('');
 }
 
 window.switchMonth = function(key){
-  viewKey=key;d=getData(key);savePanelOpen=false;
+  viewKey=key; d=getData(key); savePanelOpen=false;
   const ip=key!==TODAY;
   document.getElementById('past-banner').style.display=ip?'flex':'none';
   if(ip)document.getElementById('past-text').textContent=mLabel(key)+' 기록 (읽기 전용)';
@@ -398,68 +329,32 @@ window.switchMonth = function(key){
 }
 
 window.goCurrentMonth = function(){window.switchMonth(TODAY);}
+function setRO(on){['income','go-btn','add-btn','merge-btn','add-goal-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=on;});document.querySelectorAll('.fixed-input,.icon-btn,.env-name-input,input[type=range],.leftover-input,.goal-name-input,.spend-input,.spend-add-btn').forEach(el=>el.disabled=on);}
 
-function setRO(on){
-  ['income','go-btn','add-btn','merge-btn','add-goal-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=on;});
-  document.querySelectorAll('.fixed-input,.icon-btn,.env-name-input,input[type=range],.leftover-input,.goal-name-input,.spend-input,.spend-add-btn').forEach(el=>el.disabled=on);
-}
-
-function renderFixed(){
-  document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="window.fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="window.fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="window.rmFixed(${f.id})">×</button></div>`).join('');
-  updFSum();
-}
-window.addFixed = function(){d.fixedItems.push({id:d.fixedIdCnt++,name:'',amount:0});renderFixed();saveData();}
-window.rmFixed = function(id){d.fixedItems=d.fixedItems.filter(f=>f.id!==id);renderFixed();window.calculate();saveData();}
-window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();}
-window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();window.calculate();saveData();}
+function renderFixed(){document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="window.fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="window.fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="window.rmFixed(${f.id})">×</button></div>`).join('');updFSum();}
+window.addFixed = function(){d.fixedItems.push({id:d.fixedIdCnt++,name:'',amount:0});renderFixed();window.saveData();}
+window.rmFixed = function(id){d.fixedItems=d.fixedItems.filter(f=>f.id!==id);renderFixed();window.calculate();window.saveData();}
+window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;window.saveData();}
+window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();window.calculate();window.saveData();}
 function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);document.getElementById('fixed-sum').textContent='합계 '+s.toLocaleString()+'원';}
 
-function renderEnvelopes(){
-  document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`
-    <div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="window.toggleSavePanel()" style="cursor:pointer;"':''}>
-      <div class="env-flap"><svg viewBox="0 0 140 30" preserveAspectRatio="none"><polygon points="0,0 140,0 70,24" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/><line x1="0" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/><line x1="140" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/></svg></div>
-      <div class="env-body">
-        <input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="window.updEnv(${i},this.value)"/>
-        <div class="env-amt empty" id="ea-${e.key}">—</div>
-        <div class="env-pct" id="ep-${e.key}">${e.pct}%</div>
-        ${e.showDaily?`<div class="env-daily" id="ed-${e.key}"></div>`:''}
-        ${e.key==='save'?`<div style="font-size:10px;color:#ccc;margin-top:4px;">▼ 세부 목표</div>`:''}
-      </div>
-    </div>`).join('');
-}
-window.updEnv = function(i,v){d.envelopes[i].name=v;saveData();renderRecordEnvTabs();}
+function renderEnvelopes(){document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`<div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="window.toggleSavePanel()" style="cursor:pointer;"':''}><div class="env-flap"><svg viewBox="0 0 140 30" preserveAspectRatio="none"><polygon points="0,0 140,0 70,24" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/><line x1="0" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/><line x1="140" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/></svg></div><div class="env-body"><input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="window.updEnv(${i},this.value)"/><div class="env-amt empty" id="ea-${e.key}">—</div><div class="env-pct" id="ep-${e.key}">${e.pct}%</div>${e.showDaily?`<div class="env-daily" id="ed-${e.key}"></div>`:''}${e.key==='save'?`<div style="font-size:10px;color:#ccc;margin-top:4px;">▼ 세부 목표</div>`:''}</div></div>`).join('');}
+window.updEnv = function(i,v){d.envelopes[i].name=v;window.saveData();renderRecordEnvTabs();}
 
 window.toggleSavePanel = function(){if(isReadonly)return;savePanelOpen=!savePanelOpen;document.getElementById('save-panel').classList.toggle('open',savePanelOpen);if(savePanelOpen)renderGoals();}
-function renderGoals(){
-  if(!d.saveGoals)d.saveGoals=defData().saveGoals;
-  const saveAmtEl=document.getElementById('ea-save');
-  const saveAmt=saveAmtEl&&!saveAmtEl.classList.contains('empty')?parseInt(saveAmtEl.textContent.replace(/[^0-9]/g,'')):0;
-  document.getElementById('save-total-amt').textContent=saveAmt>0?saveAmt.toLocaleString()+'원':'—';
-  const total=d.saveGoals.reduce((s,g)=>s+g.pct,0);
-  document.getElementById('goal-list').innerHTML=d.saveGoals.map(g=>{
-    const amt=saveAmt>0?Math.round(saveAmt*(g.pct/100)/100)*100:0;
-    return`<div class="goal-item"><div class="goal-top"><input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="window.gName(${g.id},this.value)"/><div class="goal-amt">${amt>0?amt.toLocaleString()+'원':'—'}</div><button class="icon-btn" onclick="window.rmGoal(${g.id})">×</button></div><div class="goal-sl-row"><input type="range" min="0" max="100" step="1" value="${g.pct}" oninput="window.gSlide(${g.id},this.value)"/><span class="goal-pct">${g.pct}%</span></div></div>`;
-  }).join('');
-  document.getElementById('goal-sum-info').textContent='합계 '+total+'%';
-}
-window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
-window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
-window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
-window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();saveData();}
+function renderGoals(){if(!d.saveGoals)d.saveGoals=defData().saveGoals;const saveAmtEl=document.getElementById('ea-save');const saveAmt=saveAmtEl&&!saveAmtEl.classList.contains('empty')?parseInt(saveAmtEl.textContent.replace(/[^0-9]/g,'')):0;document.getElementById('save-total-amt').textContent=saveAmt>0?saveAmt.toLocaleString()+'원':'—';const total=d.saveGoals.reduce((s,g)=>s+g.pct,0);document.getElementById('goal-list').innerHTML=d.saveGoals.map(g=>{const amt=saveAmt>0?Math.round(saveAmt*(g.pct/100)/100)*100:0;return`<div class="goal-item"><div class="goal-top"><input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="window.gName(${g.id},this.value)"/><div class="goal-amt">${amt>0?amt.toLocaleString()+'원':'—'}</div><button class="icon-btn" onclick="window.rmGoal(${g.id})">×</button></div><div class="goal-sl-row"><input type="range" min="0" max="100" step="1" value="${g.pct}" oninput="window.gSlide(${g.id},this.value)"/><span class="goal-pct">${g.pct}%</span></div></div>`;}).join('');document.getElementById('goal-sum-info').textContent='합계 '+total+'%';}
+window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();window.saveData();}
+window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();window.saveData();}
+window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;window.saveData();}
+window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();window.saveData();}
 
 function renderSliders(){document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" oninput="window.onSlide('${e.key}', this.value)"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');}
-window.onSlide = function(key, v){d.envelopes.find(e=>e.key===key).pct=parseInt(v);document.getElementById('sv-'+key).textContent=v+'%';syncPcts();window.calculate();saveData();}
+window.onSlide = function(key, v){d.envelopes.find(e=>e.key===key).pct=parseInt(v);document.getElementById('sv-'+key).textContent=v+'%';syncPcts();window.calculate();window.saveData();}
 function syncPcts(){const t=d.envelopes.reduce((s,e)=>s+e.pct,0);document.getElementById('total-pct').textContent=t+'%';document.getElementById('warn').style.display=t>100?'block':'none';}
 
 function renderLeftover(){document.getElementById('leftover-rows').innerHTML=d.envelopes.map(e=>`<div class="leftover-item"><span class="leftover-label">${e.name} 남은 돈</span><input class="leftover-input" type="number" id="lo-${e.key}" placeholder="0" oninput="window.updMSum()"/></div>`).join('');}
 window.updMSum = function(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);document.getElementById('merge-sum').textContent=t.toLocaleString()+'원';}
-window.mergeLeftover = function(){
-  const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);if(t<=0)return;
-  const el=document.getElementById('ea-save');const cur=parseInt(el.textContent.replace(/[^0-9]/g,''))||0;
-  el.textContent=(cur+t).toLocaleString()+'원';el.classList.remove('empty');
-  document.getElementById('merge-result').style.display='block';
-  document.getElementById('merge-result').textContent=t.toLocaleString()+'원이 합산됐어요';
-}
+window.mergeLeftover = function(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);if(t<=0)return;const el=document.getElementById('ea-save');const cur=parseInt(el.textContent.replace(/[^0-9]/g,''))||0;el.textContent=(cur+t).toLocaleString()+'원';el.classList.remove('empty');document.getElementById('merge-result').style.display='block';document.getElementById('merge-result').textContent=t.toLocaleString()+'원이 합산됐어요';}
 
 window.calculate = function(){
   const inc=parseInt(document.getElementById('income')?.value)||0;
@@ -472,10 +367,8 @@ window.calculate = function(){
     if(aEl){aEl.textContent=av>0?amt.toLocaleString()+'원':'—';aEl.classList.toggle('empty',av<=0);}
     const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 '+Math.round(amt/30).toLocaleString()+'원':'';
   });
-  if(savePanelOpen)renderGoals();
 }
 
-const RECORD_ENVS=['life','fun']; 
 function renderRecordEnvTabs(){document.getElementById('record-env-tabs').innerHTML=RECORD_ENVS.map(key=>`<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="window.switchRecordEnv('${key}')">${d.envelopes.find(e=>e.key===key).name}</button>`).join('');}
 window.switchRecordEnv = function(key){activeRecordEnv=key;renderRecordTab();}
 function renderRecordTab(){
@@ -485,13 +378,13 @@ function renderRecordTab(){
   const s=(d.spends[k]||[]).reduce((a,b)=>a+b.amount,0);const pct=budget>0?Math.min(100,(s/budget)*100):0;
   let h=`<div class="budget-bar-wrap"><div class="budget-bar-labels"><span>예산 <strong>${budget.toLocaleString()}원</strong></span><span>${s.toLocaleString()}원 사용</span></div><div class="budget-bar-bg"><div class="budget-bar-fill" style="width:${pct}%"></div></div></div>`;
   h+=`<div class="spend-add-card"><div class="spend-row-input"><input class="spend-input" id="si-note" placeholder="내용"/><input class="spend-input" type="date" id="si-date" value="${new Date().toISOString().slice(0,10)}"/></div><div class="spend-row-input2"><select class="spend-input" id="si-cat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="spend-input right" type="number" id="si-amt" placeholder="금액"/><button class="spend-add-btn" onclick="window.addSpend('${k}')">+</button></div></div>`;
-  h+=`<div class="spend-list-card">${(d.spends[k]||[]).slice().reverse().map(x=>`<div class="spend-item"><span>${x.date.slice(5)}</span><div>${x.note}<br><span class="spend-cat-badge" style="background:${CAT_COLORS[x.cat]}22">${x.cat}</span></div><span class="spend-amount">${x.amount.toLocaleString()}원</span><button class="icon-btn" onclick="window.rmSpend('${k}',${x.id})">×</button></div>`).join('')}<div class="spend-total-row"><span>총 지출</span><strong>${s.toLocaleString()}원</strong></div></div>`;
+  h+=`<div class="spend-list-card">${(d.spends[k]||[]).slice().reverse().map(x=>`<div class="spend-item"><span>${x.date.slice(5)}</span><div>${x.note}<br><span class="spend-cat-badge" style="background:${CAT_COLORS[x.cat]}22">${x.cat}</span></div><span class="spend-amount">${x.amount.toLocaleString()}원</span><button class="icon-btn" onclick="window.rmSpend('${k}',${x.id})">×</button></div>`).join('')}</div>`;
   document.getElementById('record-content').innerHTML=h;
 }
-window.addSpend=function(k){const n=document.getElementById('si-note').value,dVal=document.getElementById('si-date').value,c=document.getElementById('si-cat').value,a=parseInt(document.getElementById('si-amt').value);if(!a)return;if(!d.spends[k])d.spends[k]=[];d.spends[k].push({id:d.spendIdCnt++,date:dVal,note:n,cat:c,amount:a});saveData();renderRecordTab();}
-window.rmSpend=function(k,id){d.spends[k]=d.spends[k].filter(x=>x.id!==id);saveData();renderRecordTab();}
+window.addSpend=function(k){const n=document.getElementById('si-note').value,dVal=document.getElementById('si-date').value,c=document.getElementById('si-cat').value,a=parseInt(document.getElementById('si-amt').value);if(!a)return;if(!d.spends[k])d.spends[k]=[];d.spends[k].push({id:d.spendIdCnt++,date:dVal,note:n,cat:c,amount:a});window.saveData();renderRecordTab();}
+window.rmSpend=function(k,id){d.spends[k]=d.spends[k].filter(x=>x.id!==id);window.saveData();renderRecordTab();}
 
-function renderAll(){const incEl=document.getElementById('income');if(incEl)incEl.value=d.income;renderFixed();renderEnvelopes();renderSliders();renderLeftover();syncPcts();window.calculate();if(mainTab==='record')renderRecordTab();}
+function renderAll(){const incEl=document.getElementById('income');if(incEl)incEl.value=d.income||'';renderFixed();renderEnvelopes();renderSliders();renderLeftover();syncPcts();window.calculate();if(mainTab==='record')renderRecordTab();}
 window.resetAll=function(){if(confirm('초기화할까요?')){localStorage.removeItem(SK);location.reload();}}
 
 let pinBuf = '';
@@ -504,8 +397,12 @@ window.pinInput = function(n){
 window.pinDelete = function(){pinBuf=pinBuf.slice(0,-1);for(let i=0;i<4;i++){const dot=document.getElementById('dot-'+i);if(dot)dot.style.background=i<pinBuf.length?'#1a1a1a':'';}};
 
 async function loginToBox() {
-  userPin = pinBuf; document.getElementById('pin-screen').style.display = 'none'; unlocked = true;
+  userPin = pinBuf;
+  // 중요: 로그인할 때 기존 기기 로컬 데이터 삭제 후 서버 데이터 대기
+  localStorage.removeItem(SK); 
+  unlocked = true;
   await loadFromFirebase();
+  document.getElementById('pin-screen').style.display = 'none';
 }
 
 async function loadFromFirebase() {
@@ -514,11 +411,18 @@ async function loadFromFirebase() {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap = await getDoc(doc(window._db, 'users', userPin));
     if (snap.exists()) {
-      localStorage.setItem(SK, JSON.stringify(snap.data().allData));
+      const remoteData = snap.data().allData;
+      localStorage.setItem(SK, JSON.stringify(remoteData));
+      d = remoteData[viewKey] || getData(viewKey);
+    } else {
+      // 보관함이 없으면 완전 초기 상태로 시작
+      const emptyData = {};
+      localStorage.setItem(SK, JSON.stringify(emptyData));
       d = getData(viewKey);
     }
-    renderAll(); buildTabs();
-  } catch(e) { console.log('불러오기 에러', e); }
+    renderAll();
+    buildTabs();
+  } catch(e) { console.log('로드 실패', e); }
 }
 
 async function saveToFirebase(all) {
@@ -526,10 +430,13 @@ async function saveToFirebase(all) {
   try {
     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await setDoc(doc(window._db, 'users', userPin), { allData: all });
-  } catch(e) { console.log('저장 에러', e); }
+  } catch(e) { console.log('저장 실패', e); }
 }
 
-window.addEventListener('db-ready', () => { buildTabs(); renderAll(); });
+// 초기 로딩 시 PIN 입력 전에는 아무것도 렌더링하지 않음
+window.addEventListener('db-ready', () => { 
+  // buildTabs, renderAll은 로그인 후에 실행됨
+});
 </script>
 </body>
 </html>
