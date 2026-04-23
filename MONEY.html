@@ -434,7 +434,7 @@ function setRO(on){
 
 /* ── 고정지출 ── */
 function renderFixed(){
-  document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="rmFixed(${f.id})">×</button></div>`).join('');
+  document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="window.fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="window.fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="window.rmFixed(${f.id})">×</button></div>`).join('');
   updFSum();
 }
 window.addFixed = function(){d.fixedItems.push({id:d.fixedIdCnt++,name:'',amount:0});renderFixed();saveData();}
@@ -446,14 +446,14 @@ function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);documen
 /* ── 봉투 ── */
 function renderEnvelopes(){
   document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`
-    <div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="toggleSavePanel()" style="cursor:pointer;"':''}>
+    <div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="window.toggleSavePanel()" style="cursor:pointer;"':''}>
       <div class="env-flap"><svg viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <polygon points="0,0 140,0 70,24" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/>
         <line x1="0" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/>
         <line x1="140" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/>
       </svg></div>
       <div class="env-body">
-        <input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="updEnv(${i},this.value)"/>
+        <input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="window.updEnv(${i},this.value)"/>
         <div class="env-amt empty" id="ea-${e.key}">—</div>
         <div class="env-pct" id="ep-${e.key}">${e.pct}%</div>
         ${e.showDaily?`<div class="env-daily" id="ed-${e.key}"></div>`:''}
@@ -488,11 +488,11 @@ function renderGoals(){
   document.getElementById('goal-list').innerHTML=d.saveGoals.map(g=>{
     const amt=saveAmt>0?Math.round(saveAmt*(g.pct/100)/100)*100:0;
     return`<div class="goal-item"><div class="goal-top">
-      <input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="gName(${g.id},this.value)"/>
+      <input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="window.gName(${g.id},this.value)"/>
       <div class="goal-amt ${amt===0?'empty':''}">${amt>0?amt.toLocaleString()+'원':'—'}</div>
-      <button class="icon-btn" onclick="rmGoal(${g.id})">×</button>
+      <button class="icon-btn" onclick="window.rmGoal(${g.id})">×</button>
     </div><div class="goal-sl-row">
-      <input type="range" min="0" max="100" step="1" value="${g.pct}" oninput="gSlide(${g.id},this.value)"/>
+      <input type="range" min="0" max="100" step="1" value="${g.pct}" oninput="window.gSlide(${g.id},this.value)"/>
       <span class="goal-pct">${g.pct}%</span>
     </div></div>`;
   }).join('');
@@ -508,7 +508,7 @@ window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct
 
 /* ── 슬라이더 ── */
 function renderSliders(){
-  document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name" id="sln-${e.key}">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" id="sl-${e.key}" oninput="onSlide('${e.key}')"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');
+  document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name" id="sln-${e.key}">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" id="sl-${e.key}" oninput="window.onSlide('${e.key}')"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');
 }
 window.onSlide = function(key){d.envelopes.find(e=>e.key===key).pct=parseInt(document.getElementById('sl-'+key).value);syncPcts();calculate();saveData();}
 function syncPcts(){
@@ -520,7 +520,7 @@ function syncPcts(){
 
 /* ── 남은 돈 ── */
 function renderLeftover(){
-  document.getElementById('leftover-rows').innerHTML=d.envelopes.map(e=>`<div class="leftover-item"><span class="leftover-label" id="lol-${e.key}">${e.name} 남은 돈</span><input class="leftover-input" type="number" id="lo-${e.key}" placeholder="0" oninput="updMSum()"/></div>`).join('');
+  document.getElementById('leftover-rows').innerHTML=d.envelopes.map(e=>`<div class="leftover-item"><span class="leftover-label" id="lol-${e.key}">${e.name} 남은 돈</span><input class="leftover-input" type="number" id="lo-${e.key}" placeholder="0" oninput="window.updMSum()"/></div>`).join('');
 }
 window.updMSum = function(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);document.getElementById('merge-sum').textContent=t.toLocaleString()+'원';}
 window.mergeLeftover = function(){
@@ -577,7 +577,7 @@ const RECORD_ENVS=['life','fun'];
 function renderRecordEnvTabs(){
   const tabs=RECORD_ENVS.map(key=>{
     const env=d.envelopes.find(e=>e.key===key);
-    return`<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="switchRecordEnv('${key}')">${env?env.name:key}</button>`;
+    return`<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="window.switchRecordEnv('${key}')">${env?env.name:key}</button>`;
   }).join('');
   document.getElementById('record-env-tabs').innerHTML=tabs;
 }
@@ -613,7 +613,7 @@ function renderRecordTab(){
     <div class="spend-row-input2">
       <select class="spend-input" id="si-cat-${key}" style="cursor:pointer;" ${isReadonly?'disabled':''}>${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
       <input class="spend-input right" type="number" id="si-amt-${key}" placeholder="금액" ${isReadonly?'disabled':''}/>
-      <button class="spend-add-btn" onclick="addSpend('${key}')" ${isReadonly?'disabled':''}>+</button>
+      <button class="spend-add-btn" onclick="window.addSpend('${key}')" ${isReadonly?'disabled':''}>+</button>
     </div>
   </div>`;
 
@@ -629,7 +629,7 @@ function renderRecordTab(){
             <span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]||'#eee'}22;color:${CAT_COLORS[s.cat]||'#888'}">${s.cat}</span>
           </div>
           <span class="spend-amount">${s.amount.toLocaleString()}원</span>
-          <button class="icon-btn" onclick="rmSpend('${key}',${s.id})" ${isReadonly?'disabled':''}>×</button>
+          <button class="icon-btn" onclick="window.rmSpend('${key}',${s.id})" ${isReadonly?'disabled':''}>×</button>
         </div>`).join('')}
     <div class="spend-total-row">
       <span>총 지출</span>
@@ -701,7 +701,7 @@ window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요
 
 /* ── Firebase + PIN 로직 ── */
 const FB_DOC_ID = 'budget_data';
-const PIN_KEY = 'app_pin';
+const PIN_DOC_ID = 'app_pin'; // Firebase에 PIN을 저장할 문서 ID
 let pinBuffer = '';
 let pinMode = 'verify'; 
 let pinFirst = '';
@@ -731,17 +731,30 @@ function updateDots() {
   }
 }
 
-function handlePin() {
-  const savedPin = localStorage.getItem(PIN_KEY);
+async function handlePin() {
+  if(!window._dbReady) return;
+  const { doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const pinRef = doc(window._db, 'users', PIN_DOC_ID);
+  
   if (pinMode === 'verify') {
-    if (pinBuffer === savedPin) {
-      document.getElementById('pin-screen').style.display = 'none';
-      unlocked = true;
-      loadFromFirebase();
+    const snap = await getDoc(pinRef);
+    if (snap.exists()) {
+      if (snap.data().val === pinBuffer) {
+        // 인증 성공
+        document.getElementById('pin-screen').style.display = 'none';
+        unlocked = true;
+        loadFromFirebase();
+      } else {
+        document.getElementById('pin-error').textContent = '잘못된 PIN이에요';
+        pinBuffer = '';
+        updateDots();
+      }
     } else {
-      document.getElementById('pin-error').textContent = '잘못된 PIN이에요';
+      // Firebase에 설정된 PIN이 없으면 새로 설정 모드로 전환
+      pinMode = 'set';
       pinBuffer = '';
       updateDots();
+      document.getElementById('pin-title').textContent = 'PIN 설정 (처음 접속)';
     }
   } else if (pinMode === 'set') {
     pinFirst = pinBuffer;
@@ -751,7 +764,8 @@ function handlePin() {
     document.getElementById('pin-title').textContent = 'PIN 확인 (한 번 더)';
   } else if (pinMode === 'confirm') {
     if (pinBuffer === pinFirst) {
-      localStorage.setItem(PIN_KEY, pinBuffer);
+      // Firebase에 PIN 저장
+      await setDoc(pinRef, { val: pinBuffer });
       document.getElementById('pin-screen').style.display = 'none';
       unlocked = true;
       loadFromFirebase();
@@ -765,10 +779,7 @@ function handlePin() {
 }
 
 async function loadFromFirebase() {
-  if (!window._dbReady) {
-    window.addEventListener('db-ready', loadFromFirebase, { once: true });
-    return;
-  }
+  if (!window._dbReady || !unlocked) return;
   try {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap = await getDoc(doc(window._db, 'users', FB_DOC_ID));
@@ -792,16 +803,11 @@ async function saveToFirebase(all) {
 }
 
 function initApp() {
-  const savedPin = localStorage.getItem(PIN_KEY);
   const screen = document.getElementById('pin-screen');
   if(screen) screen.style.display = 'flex';
-  if (!savedPin) {
-    pinMode = 'set';
-    document.getElementById('pin-title').textContent = 'PIN 설정 (4자리)';
-  } else {
-    pinMode = 'verify';
-    document.getElementById('pin-title').textContent = 'PIN 입력';
-  }
+  // 연동을 위해 무조건 verify 모드로 시작하여 Firebase에서 확인하도록 함
+  pinMode = 'verify';
+  document.getElementById('pin-title').textContent = 'PIN 입력';
 }
 
 // 시작
