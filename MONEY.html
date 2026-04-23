@@ -700,8 +700,6 @@ function renderAll(){
 window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
 
 /* ── Firebase + PIN 로직 ── */
-/* ── Firebase + PIN 로직 ── */
-// FB_DOC_ID를 고정하지 않고, 입력된 PIN에 따라 결정되도록 수정합니다.
 let currentPin = ''; 
 const PIN_KEY = 'app_pin';
 let pinBuffer = '';
@@ -734,14 +732,20 @@ function updateDots() {
 }
 
 function handlePin() {
-  const savedPin = localStorage.getItem(PIN_KEY);
+  // 수정 핵심: 로컬에 저장된 PIN과 비교하는 로직을 삭제했습니다.
+  // 입력한 PIN이 무엇이든 해당 PIN을 currentPin으로 삼아 서버에서 데이터를 가져옵니다.
   if (pinMode === 'verify') {
-    // PIN 입력 시 해당 번호를 전역 변수에 저장하고 데이터를 불러옵니다.
     currentPin = pinBuffer; 
     document.getElementById('pin-screen').style.display = 'none';
     unlocked = true;
-    localStorage.setItem(PIN_KEY, currentPin); // 기기 기억용
+    
+    // 현재 입력한 PIN을 기기에 기억시킵니다 (다음 접속 시 확인용).
+    localStorage.setItem(PIN_KEY, currentPin); 
     loadFromFirebase();
+    
+    // 입력 버퍼 초기화
+    pinBuffer = '';
+    updateDots();
   } else if (pinMode === 'set') {
     pinFirst = pinBuffer;
     pinBuffer = '';
@@ -771,12 +775,18 @@ async function loadFromFirebase() {
   }
   try {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    // 'budget_data' 대신 입력받은 currentPin을 문서 이름으로 사용합니다.
     const snap = await getDoc(doc(window._db, 'users', 'pin_' + currentPin));
     if (snap.exists()) {
       const remote = snap.data();
-      // 서버 데이터를 우선으로 로컬에 덮어씁니다.
       localStorage.setItem(SK, JSON.stringify(remote));
+      // 데이터를 불러온 후 전역 변수 d를 업데이트하고 화면을 다시 그립니다.
+      d = getData(viewKey);
+      renderAll();
+    } else {
+      // 해당 PIN으로 저장된 데이터가 서버에 없는 경우 (새 사용자)
+      // 현재 로컬 데이터를 유지할지, 초기화할지 결정할 수 있습니다.
+      // 여기서는 새 PIN 입력 시 빈 데이터를 보여주도록 초기화합니다.
+      localStorage.removeItem(SK);
       d = getData(viewKey);
       renderAll();
     }
@@ -787,24 +797,19 @@ async function saveToFirebase(all) {
   if (!window._dbReady || !unlocked || !currentPin) return;
   try {
     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    // 저장할 때도 해당 PIN 문서에 저장합니다.
     await setDoc(doc(window._db, 'users', 'pin_' + currentPin), all);
   } catch(e) { console.log('Firebase save error', e); }
 }
 
 function initApp() {
-  const savedPin = localStorage.getItem(PIN_KEY);
   const screen = document.getElementById('pin-screen');
   if(screen) screen.style.display = 'flex';
   
-  // 기기에 저장된 PIN이 있더라도 항상 입력을 받도록 하여 보안과 동기화를 유지합니다.
+  // 기기에 저장된 번호가 있든 없든, 항상 PIN을 입력받는 화면을 띄웁니다.
+  // 어떤 번호를 입력하느냐에 따라 그 번호의 금전 기록을 불러오게 됩니다.
   pinMode = 'verify';
   document.getElementById('pin-title').textContent = 'PIN 입력';
-  
-  if (!savedPin) {
-    pinMode = 'set';
-    document.getElementById('pin-title').textContent = 'PIN 설정 (4자리)';
-  }
+  document.getElementById('pin-error').textContent = '';
 }
 
 // 시작
