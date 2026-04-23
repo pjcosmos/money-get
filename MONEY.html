@@ -478,18 +478,25 @@ window.updEnv = function(i,v){
   saveData();renderRecordEnvTabs();
 }
 
+/* ── 저축 패널 (금액 유지 핵심 수정) ── */
 window.toggleSavePanel = function(){
   if(isReadonly)return;
   savePanelOpen=!savePanelOpen;
   document.getElementById('save-panel').classList.toggle('open',savePanelOpen);
+  
+  // 패널을 열고 닫을 때 현재 분배된 금액을 강제로 다시 계산하여 유지시킵니다.
+  calculate(); 
   renderEnvelopes();
-  if(savePanelOpen)renderGoals();
+  if(savePanelOpen) renderGoals();
 }
 
 function renderGoals(){
   if(!d.saveGoals)d.saveGoals=defData().saveGoals;
   const saveAmtEl=document.getElementById('ea-save');
-  const saveAmt=saveAmtEl&&!saveAmtEl.classList.contains('empty')?parseInt(saveAmtEl.textContent.replace(/[^0-9]/g,'')):0;
+  // 화면에 표시된 금액에서 숫자만 추출
+  const saveAmtText = saveAmtEl ? saveAmtEl.textContent.replace(/[^0-9]/g,'') : '';
+  const saveAmt = saveAmtText !== '' ? parseInt(saveAmtText) : 0;
+  
   document.getElementById('save-total-amt').textContent=saveAmt>0?saveAmt.toLocaleString()+'원':'—';
   const total=d.saveGoals.reduce((s,g)=>s+g.pct,0);
   document.getElementById('goal-list').innerHTML=d.saveGoals.map(g=>{
@@ -507,6 +514,7 @@ function renderGoals(){
   info.textContent='합계 '+total+'%';
   info.className='goal-sum-info'+(total!==100?' over':'');
 }
+
 window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
 window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
 window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
@@ -686,7 +694,7 @@ function renderAll(){
   document.getElementById('merge-result').style.display='none';
 }
 
-window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
+window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);localStorage.removeItem(PIN_KEY);location.reload();}
 
 /* ── Firebase + PIN ── */
 const PIN_KEY = 'app_pin';
@@ -719,7 +727,7 @@ function updateDots() {
 function handlePin() {
   if (pinMode === 'verify') {
     currentPin = pinBuffer; 
-    localStorage.removeItem(SK); // 기기간 간섭 방지 초기화
+    localStorage.removeItem(SK); 
     unlocked = true; 
     document.getElementById('pin-screen').style.display = 'none';
     localStorage.setItem(PIN_KEY, currentPin); 
@@ -787,5 +795,6 @@ function initApp() {
 buildTabs();
 initApp();
 </script>
+
 </body>
 </html>
