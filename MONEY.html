@@ -27,17 +27,15 @@
     .past-banner{display:none;justify-content:space-between;align-items:center;padding:10px 16px;background:#fffbe6;border:0.5px solid #ffe082;border-radius:10px;margin-bottom:14px;font-size:13px;color:#8a6d00;}
     .past-banner button{font-size:12px;font-weight:500;color:#8a6d00;background:none;border:none;cursor:pointer;text-decoration:underline;}
 
-    /* 메인 탭 (예산 / 기록) */
+    /* 메인 탭 */
     .main-tabs{display:flex;gap:0;margin-bottom:20px;background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:4px;overflow:hidden;}
     .main-tab{flex:1;padding:9px;text-align:center;font-size:14px;color:#aaa;cursor:pointer;border-radius:9px;font-weight:400;transition:background .15s,color .15s;}
     .main-tab.active{background:#1a1a1a;color:#fff;font-weight:500;}
 
-    /* 공통 */
     .section{margin-bottom:12px;}
     .section-label{font-size:11px;color:#aaa;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;padding-left:2px;}
     .card{background:#fff;border:0.5px solid #e0e0e0;border-radius:14px;padding:18px 20px;}
 
-    /* 수입 */
     .income-row{display:flex;gap:8px;}
     .income-wrap{flex:1;position:relative;}
     .income-wrap span{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;color:#bbb;pointer-events:none;}
@@ -52,15 +50,13 @@
     .available-row span{color:#5a9070;}
     .available-row strong{font-weight:500;color:#2d7a50;font-size:15px;}
 
-    /* 고정지출 */
     .fixed-item{display:grid;grid-template-columns:1fr 110px 28px;gap:8px;align-items:center;margin-bottom:8px;}
-    .fixed-item:last-of-type{margin-bottom:0;}
     .fixed-input{width:100%;padding:8px 10px;border:0.5px solid #e8e8e8;border-radius:8px;font-size:13px;color:#1a1a1a;background:#fafafa;outline:none;}
     .fixed-input:focus{border-color:#aaa;background:#fff;}
     .fixed-input::placeholder{color:#ccc;}
     .fixed-input.amt{text-align:right;}
     .fixed-input:disabled{color:#aaa;background:#f0f0f0;}
-    .icon-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0.5px solid #e8e8e8;border-radius:7px;background:transparent;color:#ccc;font-size:15px;cursor:pointer;flex-shrink:0;}
+    .icon-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0.5px solid #e8e8e8;border-radius:7px;background:transparent;color:#ccc;font-size:15px;cursor:pointer;}
     .icon-btn:hover{border-color:#e05a2b;color:#e05a2b;}
     .icon-btn:disabled{opacity:.3;cursor:default;pointer-events:none;}
     .fixed-footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:10px;border-top:0.5px solid #f0f0f0;}
@@ -69,7 +65,6 @@
     .add-btn:disabled{opacity:.3;cursor:default;}
     .fixed-sum{font-size:12px;color:#e05a2b;font-weight:500;}
 
-    /* 봉투 */
     .envelopes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
     @media(max-width:480px){.envelopes{grid-template-columns:repeat(2,minmax(0,1fr));}}
     .envelope{background:#fff;border:0.5px solid #e0e0e0;border-radius:11px;overflow:hidden;}
@@ -84,7 +79,6 @@
     .env-pct{font-size:11px;color:#bbb;}
     .env-daily{font-size:10px;color:#bbb;margin-top:1px;}
 
-    /* 저축 목표 패널 */
     .save-panel{margin-top:10px;background:#fff;border:0.5px solid #1a1a1a;border-radius:14px;padding:18px 20px;display:none;}
     .save-panel.open{display:block;}
     .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
@@ -111,7 +105,6 @@
     .goal-sum-info{font-size:12px;color:#bbb;}
     .goal-sum-info.over{color:#e05a2b;}
 
-    /* 슬라이더 */
     .sl-row{display:grid;grid-template-columns:68px 1fr 36px;gap:10px;align-items:center;margin-bottom:11px;}
     .sl-row:last-of-type{margin-bottom:0;}
     .sl-name{font-size:13px;color:#666;}
@@ -125,7 +118,6 @@
     .sl-footer strong{font-weight:500;}
     .warn{font-size:12px;color:#e05a2b;margin-top:8px;display:none;text-align:right;}
 
-    /* 남은 돈 */
     .leftover-item{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;margin-bottom:8px;}
     .leftover-item:last-of-type{margin-bottom:0;}
     .leftover-label{font-size:13px;color:#666;}
@@ -141,14 +133,12 @@
     .merge-btn:disabled{opacity:.3;cursor:default;}
     .merge-result{margin-top:10px;padding:10px 14px;background:#f0f9f4;border:0.5px solid #c6e8d4;border-radius:8px;font-size:13px;color:#2d7a50;display:none;}
 
-    /* ─── 기록 탭 ─── */
     .record-env-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;}
     .record-env-tabs::-webkit-scrollbar{display:none;}
     .record-env-tab{padding:7px 16px;border-radius:999px;border:0.5px solid #ddd;background:#fff;font-size:13px;color:#888;cursor:pointer;white-space:nowrap;flex-shrink:0;}
     .record-env-tab:hover{border-color:#aaa;color:#555;}
     .record-env-tab.active{background:#1a1a1a;border-color:#1a1a1a;color:#fff;font-weight:500;}
 
-    /* 예산 요약 바 */
     .budget-bar-wrap{margin-bottom:16px;}
     .budget-bar-labels{display:flex;justify-content:space-between;font-size:12px;color:#aaa;margin-bottom:5px;}
     .budget-bar-labels strong{color:#1a1a1a;font-size:13px;}
@@ -157,7 +147,6 @@
     .budget-bar-fill{height:100%;border-radius:3px;background:#1a1a1a;transition:width .3s;}
     .budget-bar-fill.over{background:#e05a2b;}
 
-    /* 지출 입력 */
     .spend-add-card{background:#fff;border:0.5px solid #e0e0e0;border-radius:14px;padding:16px 18px;margin-bottom:12px;}
     .spend-add-title{font-size:11px;color:#aaa;letter-spacing:.4px;text-transform:uppercase;margin-bottom:12px;}
     .spend-row-input{display:grid;grid-template-columns:1fr 100px;gap:8px;margin-bottom:8px;}
@@ -171,7 +160,6 @@
     .spend-add-btn:hover{opacity:.8;}
     .spend-add-btn:disabled{opacity:.3;cursor:default;}
 
-    /* 지출 목록 */
     .spend-list-card{background:#fff;border:0.5px solid #e0e0e0;border-radius:14px;padding:16px 18px;}
     .spend-list-title{font-size:11px;color:#aaa;letter-spacing:.4px;text-transform:uppercase;margin-bottom:12px;}
     .spend-item{display:grid;grid-template-columns:52px 1fr auto 28px;gap:8px;align-items:center;padding:9px 0;border-bottom:0.5px solid #f5f5f5;}
@@ -187,7 +175,6 @@
     .spend-total-row strong{font-weight:500;}
     .spend-total-row strong.over{color:#e05a2b;}
 
-    /* 도넛 차트 */
     .chart-card{background:#fff;border:0.5px solid #e0e0e0;border-radius:14px;padding:16px 18px;margin-top:12px;}
     .chart-title{font-size:11px;color:#aaa;letter-spacing:.4px;text-transform:uppercase;margin-bottom:14px;}
     .chart-wrap{display:flex;align-items:center;gap:20px;}
@@ -201,6 +188,7 @@
     .reset-btn{font-size:11px;color:#ccc;background:none;border:none;cursor:pointer;padding:0;margin-top:24px;display:block;width:100%;text-align:center;}
     .reset-btn:hover{color:#e05a2b;}
   </style>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -216,7 +204,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     window._db = db;
     window._dbReady = true;
     window.dispatchEvent(new Event('db-ready'));
@@ -237,8 +224,8 @@
   </div>
 
   <div class="main-tabs">
-    <div class="main-tab active" id="tab-budget" onclick="switchMainTab('budget')">예산</div>
-    <div class="main-tab" id="tab-record" onclick="switchMainTab('record')">기록</div>
+    <div class="main-tab active" id="tab-budget" onclick="window.switchMainTab('budget')">예산</div>
+    <div class="main-tab" id="tab-record" onclick="window.switchMainTab('record')">기록</div>
   </div>
 
   <div id="view-budget">
@@ -258,7 +245,7 @@
       <div class="card">
         <div id="fixed-list"></div>
         <div class="fixed-footer">
-          <button class="add-btn" id="add-btn" onclick="addFixed()">+ 항목 추가</button>
+          <button class="add-btn" id="add-btn" onclick="window.addFixed()">+ 항목 추가</button>
           <span class="fixed-sum" id="fixed-sum">합계 0원</span>
         </div>
       </div>
@@ -272,12 +259,12 @@
           <span class="panel-title" id="save-panel-title">저축 세부 목표</span>
           <div style="display:flex;align-items:center;gap:12px;">
             <span class="panel-meta">총 <strong id="save-total-amt">—</strong></span>
-            <button class="close-btn" onclick="toggleSavePanel()">×</button>
+            <button class="close-btn" onclick="window.toggleSavePanel()">×</button>
           </div>
         </div>
         <div class="goal-list" id="goal-list"></div>
         <div class="goal-footer">
-          <button class="add-goal-btn" id="add-goal-btn" onclick="addGoal()">+ 목표 추가</button>
+          <button class="add-goal-btn" id="add-goal-btn" onclick="window.addGoal()">+ 목표 추가</button>
           <span class="goal-sum-info" id="goal-sum-info">합계 100%</span>
         </div>
       </div>
@@ -298,7 +285,7 @@
         <div id="leftover-rows"></div>
         <div class="merge-row">
           <span class="merge-total">합산 금액 <strong id="merge-sum">0원</strong></span>
-          <button class="merge-btn" id="merge-btn" onclick="mergeLeftover()">저축에 합산</button>
+          <button class="merge-btn" id="merge-btn" onclick="window.mergeLeftover()">저축에 합산</button>
         </div>
         <div class="merge-result" id="merge-result"></div>
       </div>
@@ -310,30 +297,30 @@
     <div id="record-content"></div>
   </div>
 
-  <button class="reset-btn" onclick="resetAll()">초기화</button>
+  <button class="reset-btn" onclick="window.resetAll()">초기화</button>
 </div>
 
 <div id="pin-screen" style="display:flex;position:fixed;inset:0;background:#f5f5f3;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
-  <p style="font-size:17px;font-weight:500;color:#1a1a1a;" id="pin-title">PIN 번호 입력</p>
+  <p style="font-size:17px;font-weight:500;color:#1a1a1a;" id="pin-title">PIN 번호로 보관함 열기</p>
   <div style="display:flex;gap:12px;" id="pin-dots">
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-0"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-1"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-2"></div>
     <div style="width:14px;height:14px;border-radius:50%;border:1.5px solid #ccc;" id="dot-3"></div>
   </div>
-  <p style="font-size:12px;color:#aaa;" id="pin-desc">번호를 입력하면 해당 보관함이 열립니다.</p>
+  <p style="font-size:12px;color:#aaa;">번호를 입력하면 기기 내역이 연동됩니다.</p>
   <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
-    <button onclick="window.pinInput('1')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">1</button>
-    <button onclick="window.pinInput('2')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">2</button>
-    <button onclick="window.pinInput('3')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">3</button>
-    <button onclick="window.pinInput('4')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">4</button>
-    <button onclick="window.pinInput('5')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">5</button>
-    <button onclick="window.pinInput('6')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">6</button>
-    <button onclick="window.pinInput('7')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">7</button>
-    <button onclick="window.pinInput('8')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">8</button>
-    <button onclick="window.pinInput('9')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">9</button>
+    <button onclick="window.pinInput('1')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">1</button>
+    <button onclick="window.pinInput('2')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">2</button>
+    <button onclick="window.pinInput('3')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">3</button>
+    <button onclick="window.pinInput('4')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">4</button>
+    <button onclick="window.pinInput('5')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">5</button>
+    <button onclick="window.pinInput('6')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">6</button>
+    <button onclick="window.pinInput('7')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">7</button>
+    <button onclick="window.pinInput('8')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">8</button>
+    <button onclick="window.pinInput('9')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">9</button>
     <div></div>
-    <button onclick="window.pinInput('0')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">0</button>
+    <button onclick="window.pinInput('0')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;cursor:pointer;">0</button>
     <button onclick="window.pinDelete()" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:18px;cursor:pointer;">⌫</button>
   </div>
 </div>
@@ -349,28 +336,14 @@ let mainTab='budget';
 let activeRecordEnv='life';
 let savePanelOpen=false;
 let isReadonly=false;
-let userPin = ''; // 전역 PIN 변수
+let userPin = ''; 
 let unlocked = false;
 
 const CAT_COLORS={'식당':'#D85A30','카페':'#BA7517','마트':'#1D9E75','교통':'#185FA5','쇼핑':'#534AB7','문화':'#993556','기타':'#888780'};
 const CATS=Object.keys(CAT_COLORS);
 
 function defData(){
-  return{
-    income:'',
-    envelopes:[
-      {key:'save',name:'저축',pct:50,isMain:true},
-      {key:'life',name:'생활비',pct:30,showDaily:true},
-      {key:'fun',name:'여가',pct:10},
-      {key:'emer',name:'비상금',pct:10},
-    ],
-    fixedItems:[{id:1,name:'통신비',amount:0},{id:2,name:'OTT',amount:0},{id:3,name:'교통비',amount:0}],
-    fixedIdCnt:4,
-    saveGoals:[{id:1,name:'주식',pct:50},{id:2,name:'여행',pct:30},{id:3,name:'기타',pct:20}],
-    goalIdCnt:4,
-    spends:{life:[],fun:[]},
-    spendIdCnt:1,
-  };
+  return{income:'',envelopes:[{key:'save',name:'저축',pct:50,isMain:true},{key:'life',name:'생활비',pct:30,showDaily:true},{key:'fun',name:'여가',pct:10},{key:'emer',name:'비상금',pct:10}],fixedItems:[{id:1,name:'통신비',amount:0},{id:2,name:'OTT',amount:0},{id:3,name:'교통비',amount:0}],fixedIdCnt:4,saveGoals:[{id:1,name:'주식',pct:50},{id:2,name:'여행',pct:30},{id:3,name:'기타',pct:20}],goalIdCnt:4,spends:{life:[],fun:[]},spendIdCnt:1};
 }
 
 function loadAll(){try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};}}
@@ -399,7 +372,6 @@ function saveData(){
   const all=loadAll();all[TODAY]=d;saveAll(all);
 }
 
-/* ── 메인 탭 전환 ── */
 window.switchMainTab = function(tab){
   mainTab=tab;
   document.getElementById('view-budget').style.display=tab==='budget'?'block':'none';
@@ -409,7 +381,6 @@ window.switchMainTab = function(tab){
   if(tab==='record')renderRecordTab();
 }
 
-/* ── 월 탭 ── */
 function buildTabs(){
   const all=loadAll();const ks=new Set(Object.keys(all));ks.add(TODAY);
   for(let i=5;i>=0;i--){const t=new Date(now.getFullYear(),now.getMonth()-i,1);ks.add(mKey(t.getFullYear(),t.getMonth()));}
@@ -433,26 +404,20 @@ function setRO(on){
   document.querySelectorAll('.fixed-input,.icon-btn,.env-name-input,input[type=range],.leftover-input,.goal-name-input,.spend-input,.spend-add-btn').forEach(el=>el.disabled=on);
 }
 
-/* ── 고정지출 ── */
 function renderFixed(){
   document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="window.fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="window.fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="window.rmFixed(${f.id})">×</button></div>`).join('');
   updFSum();
 }
 window.addFixed = function(){d.fixedItems.push({id:d.fixedIdCnt++,name:'',amount:0});renderFixed();saveData();}
-window.rmFixed = function(id){d.fixedItems=d.fixedItems.filter(f=>f.id!==id);renderFixed();calculate();saveData();}
+window.rmFixed = function(id){d.fixedItems=d.fixedItems.filter(f=>f.id!==id);renderFixed();window.calculate();saveData();}
 window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();}
-window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();calculate();saveData();}
+window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();window.calculate();saveData();}
 function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);document.getElementById('fixed-sum').textContent='합계 '+s.toLocaleString()+'원';}
 
-/* ── 봉투 ── */
 function renderEnvelopes(){
   document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`
     <div class="envelope" id="env-${e.key}" ${e.key==='save'?'onclick="window.toggleSavePanel()" style="cursor:pointer;"':''}>
-      <div class="env-flap"><svg viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <polygon points="0,0 140,0 70,24" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/>
-        <line x1="0" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/>
-        <line x1="140" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/>
-      </svg></div>
+      <div class="env-flap"><svg viewBox="0 0 140 30" preserveAspectRatio="none"><polygon points="0,0 140,0 70,24" fill="#fff" stroke="#e0e0e0" stroke-width="0.5"/><line x1="0" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/><line x1="140" y1="0" x2="70" y2="24" stroke="#e0e0e0" stroke-width="0.5"/></svg></div>
       <div class="env-body">
         <input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="window.updEnv(${i},this.value)"/>
         <div class="env-amt empty" id="ea-${e.key}">—</div>
@@ -462,22 +427,9 @@ function renderEnvelopes(){
       </div>
     </div>`).join('');
 }
-window.updEnv = function(i,v){
-  d.envelopes[i].name=v;
-  const sl=document.getElementById('sln-'+d.envelopes[i].key);if(sl)sl.textContent=v;
-  const lo=document.getElementById('lol-'+d.envelopes[i].key);if(lo)lo.textContent=v+' 남은 돈';
-  saveData();renderRecordEnvTabs();
-}
+window.updEnv = function(i,v){d.envelopes[i].name=v;saveData();renderRecordEnvTabs();}
 
-/* ── 저축 패널 ── */
-window.toggleSavePanel = function(){
-  if(isReadonly)return;
-  savePanelOpen=!savePanelOpen;
-  document.getElementById('save-panel').classList.toggle('open',savePanelOpen);
-  const envCard=document.getElementById('env-save');
-  if(envCard)envCard.style.borderColor=savePanelOpen?'#1a1a1a':'';
-  if(savePanelOpen)renderGoals();
-}
+window.toggleSavePanel = function(){if(isReadonly)return;savePanelOpen=!savePanelOpen;document.getElementById('save-panel').classList.toggle('open',savePanelOpen);if(savePanelOpen)renderGoals();}
 function renderGoals(){
   if(!d.saveGoals)d.saveGoals=defData().saveGoals;
   const saveAmtEl=document.getElementById('ea-save');
@@ -486,14 +438,7 @@ function renderGoals(){
   const total=d.saveGoals.reduce((s,g)=>s+g.pct,0);
   document.getElementById('goal-list').innerHTML=d.saveGoals.map(g=>{
     const amt=saveAmt>0?Math.round(saveAmt*(g.pct/100)/100)*100:0;
-    return`<div class="goal-item"><div class="goal-top">
-      <input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="window.gName(${g.id},this.value)"/>
-      <div class="goal-amt ${amt===0?'empty':''}">${amt>0?amt.toLocaleString()+'원':'—'}</div>
-      <button class="icon-btn" onclick="window.rmGoal(${g.id})">×</button>
-    </div><div class="goal-sl-row">
-      <input type="range" min="0" max="100" step="1" value="${g.pct}" oninput="window.gSlide(${g.id},this.value)"/>
-      <span class="goal-pct">${g.pct}%</span>
-    </div></div>`;
+    return`<div class="goal-item"><div class="goal-top"><input class="goal-name-input" type="text" placeholder="목표 이름" value="${g.name}" oninput="window.gName(${g.id},this.value)"/><div class="goal-amt">${amt>0?amt.toLocaleString()+'원':'—'}</div><button class="icon-btn" onclick="window.rmGoal(${g.id})">×</button></div><div class="goal-sl-row"><input type="range" min="0" max="100" step="1" value="${g.pct}" oninput="window.gSlide(${g.id},this.value)"/><span class="goal-pct">${g.pct}%</span></div></div>`;
   }).join('');
   document.getElementById('goal-sum-info').textContent='합계 '+total+'%';
 }
@@ -502,146 +447,64 @@ window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);render
 window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
 window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();saveData();}
 
-/* ── 슬라이더 ── */
-function renderSliders(){
-  document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name" id="sln-${e.key}">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" id="sl-${e.key}" oninput="window.onSlide('${e.key}')"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');
-}
-window.onSlide = function(key){d.envelopes.find(e=>e.key===key).pct=parseInt(document.getElementById('sl-'+key).value);syncPcts();calculate();saveData();}
-function syncPcts(){
-  const t=d.envelopes.reduce((s,e)=>s+e.pct,0);
-  d.envelopes.forEach(e=>{const sv=document.getElementById('sv-'+e.key);if(sv)sv.textContent=e.pct+'%';});
-  const tEl=document.getElementById('total-pct');tEl.textContent=t+'%';tEl.style.color=t===100?'#1a1a1a':'#e05a2b';
-  document.getElementById('warn').style.display=t>100?'block':'none';
-}
+function renderSliders(){document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" oninput="window.onSlide('${e.key}', this.value)"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');}
+window.onSlide = function(key, v){d.envelopes.find(e=>e.key===key).pct=parseInt(v);document.getElementById('sv-'+key).textContent=v+'%';syncPcts();window.calculate();saveData();}
+function syncPcts(){const t=d.envelopes.reduce((s,e)=>s+e.pct,0);document.getElementById('total-pct').textContent=t+'%';document.getElementById('warn').style.display=t>100?'block':'none';}
 
-/* ── 남은 돈 ── */
-function renderLeftover(){
-  document.getElementById('leftover-rows').innerHTML=d.envelopes.map(e=>`<div class="leftover-item"><span class="leftover-label" id="lol-${e.key}">${e.name} 남은 돈</span><input class="leftover-input" type="number" id="lo-${e.key}" placeholder="0" oninput="window.updMSum()"/></div>`).join('');
-}
+function renderLeftover(){document.getElementById('leftover-rows').innerHTML=d.envelopes.map(e=>`<div class="leftover-item"><span class="leftover-label">${e.name} 남은 돈</span><input class="leftover-input" type="number" id="lo-${e.key}" placeholder="0" oninput="window.updMSum()"/></div>`).join('');}
 window.updMSum = function(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);document.getElementById('merge-sum').textContent=t.toLocaleString()+'원';}
 window.mergeLeftover = function(){
-  const total=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);
-  if(total<=0){alert('남은 금액을 입력해주세요');return;}
-  const el=document.getElementById('ea-save');
-  const cur=parseInt((el.textContent||'0').replace(/[^0-9]/g,''))||0;
-  const next=cur+total;
-  el.textContent=next.toLocaleString()+'원';el.classList.remove('empty');
-  const sn=d.envelopes.find(e=>e.key==='save').name;
-  const res=document.getElementById('merge-result');
-  res.style.display='block';res.textContent=total.toLocaleString()+'원이 '+sn+'에 합산됐어요 → '+next.toLocaleString()+'원';
-  d.envelopes.forEach(e=>{document.getElementById('lo-'+e.key).value='';});
-  document.getElementById('merge-sum').textContent='0원';
-  if(savePanelOpen)renderGoals();
+  const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);if(t<=0)return;
+  const el=document.getElementById('ea-save');const cur=parseInt(el.textContent.replace(/[^0-9]/g,''))||0;
+  el.textContent=(cur+t).toLocaleString()+'원';el.classList.remove('empty');
+  document.getElementById('merge-result').style.display='block';
+  document.getElementById('merge-result').textContent=t.toLocaleString()+'원이 합산됐어요';
 }
-
-/* ── 계산 ── */
-function getBudget(key){
-  const inc=parseInt(document.getElementById('income')?.value)||0;
-  const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
-  const av=Math.max(0,inc-fix);
-  const tot=d.envelopes.reduce((s,e)=>s+e.pct,0);
-  const env=d.envelopes.find(e=>e.key===key);
-  if(!env||tot===0||av===0)return 0;
-  return Math.round(av*(env.pct/tot)/100)*100;
-}
-function getSpent(key){if(!d.spends||!d.spends[key])return 0;return d.spends[key].reduce((s,sp)=>s+sp.amount,0);}
 
 window.calculate = function(){
-  const incEl = document.getElementById('income');
-  const inc=parseInt(incEl ? incEl.value : 0)||0;
-  const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
-  const av=Math.max(0,inc-fix);
-  const row=document.getElementById('available-row');
-  if(inc>0){row.style.display='flex';document.getElementById('available-amt').textContent=av.toLocaleString()+'원';}
-  else row.style.display='none';
+  const inc=parseInt(document.getElementById('income')?.value)||0;
+  const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);const av=Math.max(0,inc-fix);
+  document.getElementById('available-row').style.display=inc>0?'flex':'none';
+  document.getElementById('available-amt').textContent=av.toLocaleString()+'원';
   const tot=d.envelopes.reduce((s,e)=>s+e.pct,0);
   d.envelopes.forEach(e=>{
-    const r=tot>0?e.pct/tot:0;
-    const amt=av>0?Math.round(av*r/100)*100:0;
-    const aEl=document.getElementById('ea-'+e.key);
-    if(aEl){if(av>0){aEl.textContent=amt.toLocaleString()+'원';aEl.classList.remove('empty');}else{aEl.textContent='—';aEl.classList.add('empty');}}
-    const pEl=document.getElementById('ep-'+e.key);if(pEl)pEl.textContent=e.pct+'%';
-    if(e.showDaily){const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 '+Math.round(amt/30).toLocaleString()+'원':'';}
+    const amt=Math.round(av*(e.pct/tot)/100)*100;const aEl=document.getElementById('ea-'+e.key);
+    if(aEl){aEl.textContent=av>0?amt.toLocaleString()+'원':'—';aEl.classList.toggle('empty',av<=0);}
+    const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 '+Math.round(amt/30).toLocaleString()+'원':'';
   });
   if(savePanelOpen)renderGoals();
-  if(mainTab==='record')renderRecordTab();
 }
 
-/* ── 기록 탭 ── */
 const RECORD_ENVS=['life','fun']; 
-function renderRecordEnvTabs(){
-  document.getElementById('record-env-tabs').innerHTML=RECORD_ENVS.map(key=>{
-    const env=d.envelopes.find(e=>e.key===key);
-    return`<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="window.switchRecordEnv('${key}')">${env?env.name:key}</button>`;
-  }).join('');
-}
+function renderRecordEnvTabs(){document.getElementById('record-env-tabs').innerHTML=RECORD_ENVS.map(key=>`<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="window.switchRecordEnv('${key}')">${d.envelopes.find(e=>e.key===key).name}</button>`).join('');}
 window.switchRecordEnv = function(key){activeRecordEnv=key;renderRecordTab();}
-
 function renderRecordTab(){
-  renderRecordEnvTabs();
-  const key=activeRecordEnv;
-  if(!d.spends[key])d.spends[key]=[];
-  const budget=getBudget(key);
-  const spent=getSpent(key);
-  const remaining=budget-spent;
-  const pct=budget>0?Math.min(100,Math.round(spent/budget*100)):0;
-  const todayStr=new Date().toISOString().slice(0,10);
-
-  let barHtml=`<div class="budget-bar-wrap"><div class="budget-bar-labels"><span>예산 <strong>${budget.toLocaleString()}원</strong></span><span>${spent.toLocaleString()}원 사용</span></div><div class="budget-bar-bg"><div class="budget-bar-fill" style="width:${pct}%"></div></div></div>`;
-  let addHtml=`<div class="spend-add-card"><div class="spend-row-input"><input class="spend-input" id="si-note" placeholder="내용"/><input class="spend-input" type="date" id="si-date" value="${todayStr}"/></div><div class="spend-row-input2"><select class="spend-input" id="si-cat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="spend-input right" type="number" id="si-amt" placeholder="금액"/><button class="spend-add-btn" onclick="window.addSpend('${key}')">+</button></div></div>`;
-  let listHtml=`<div class="spend-list-card">${(d.spends[key]||[]).slice().reverse().map(s=>`<div class="spend-item"><span>${s.date.slice(5)}</span><div>${s.note}<br><span class="spend-cat-badge" style="background:${CAT_COLORS[s.cat]}22">${s.cat}</span></div><span class="spend-amount">${s.amount.toLocaleString()}원</span><button class="icon-btn" onclick="window.rmSpend('${key}',${s.id})">×</button></div>`).join('')}<div class="spend-total-row"><span>총 지출</span><strong>${spent.toLocaleString()}원</strong></div></div>`;
-
-  document.getElementById('record-content').innerHTML=barHtml+addHtml+listHtml;
+  renderRecordEnvTabs();const k=activeRecordEnv;
+  const inc=parseInt(document.getElementById('income')?.value)||0;const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);const av=Math.max(0,inc-fix);
+  const budget=Math.round(av*(d.envelopes.find(e=>e.key===k).pct/d.envelopes.reduce((s,e)=>s+e.pct,0))/100)*100;
+  const s=(d.spends[k]||[]).reduce((a,b)=>a+b.amount,0);const pct=budget>0?Math.min(100,(s/budget)*100):0;
+  let h=`<div class="budget-bar-wrap"><div class="budget-bar-labels"><span>예산 <strong>${budget.toLocaleString()}원</strong></span><span>${s.toLocaleString()}원 사용</span></div><div class="budget-bar-bg"><div class="budget-bar-fill" style="width:${pct}%"></div></div></div>`;
+  h+=`<div class="spend-add-card"><div class="spend-row-input"><input class="spend-input" id="si-note" placeholder="내용"/><input class="spend-input" type="date" id="si-date" value="${new Date().toISOString().slice(0,10)}"/></div><div class="spend-row-input2"><select class="spend-input" id="si-cat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="spend-input right" type="number" id="si-amt" placeholder="금액"/><button class="spend-add-btn" onclick="window.addSpend('${k}')">+</button></div></div>`;
+  h+=`<div class="spend-list-card">${(d.spends[k]||[]).slice().reverse().map(x=>`<div class="spend-item"><span>${x.date.slice(5)}</span><div>${x.note}<br><span class="spend-cat-badge" style="background:${CAT_COLORS[x.cat]}22">${x.cat}</span></div><span class="spend-amount">${x.amount.toLocaleString()}원</span><button class="icon-btn" onclick="window.rmSpend('${k}',${x.id})">×</button></div>`).join('')}<div class="spend-total-row"><span>총 지출</span><strong>${s.toLocaleString()}원</strong></div></div>`;
+  document.getElementById('record-content').innerHTML=h;
 }
+window.addSpend=function(k){const n=document.getElementById('si-note').value,dVal=document.getElementById('si-date').value,c=document.getElementById('si-cat').value,a=parseInt(document.getElementById('si-amt').value);if(!a)return;if(!d.spends[k])d.spends[k]=[];d.spends[k].push({id:d.spendIdCnt++,date:dVal,note:n,cat:c,amount:a});saveData();renderRecordTab();}
+window.rmSpend=function(k,id){d.spends[k]=d.spends[k].filter(x=>x.id!==id);saveData();renderRecordTab();}
 
-window.addSpend = function(key){
-  const note=document.getElementById('si-note').value;
-  const date=document.getElementById('si-date').value;
-  const cat=document.getElementById('si-cat').value;
-  const amt=parseInt(document.getElementById('si-amt').value);
-  if(!amt)return;
-  if(!d.spends[key])d.spends[key]=[];
-  d.spends[key].push({id:d.spendIdCnt++,date,note,cat,amount:amt});
-  saveData();renderRecordTab();
-}
-window.rmSpend = function(key,id){
-  d.spends[key]=d.spends[key].filter(s=>s.id!==id);
-  saveData();renderRecordTab();
-}
+function renderAll(){const incEl=document.getElementById('income');if(incEl)incEl.value=d.income;renderFixed();renderEnvelopes();renderSliders();renderLeftover();syncPcts();window.calculate();if(mainTab==='record')renderRecordTab();}
+window.resetAll=function(){if(confirm('초기화할까요?')){localStorage.removeItem(SK);location.reload();}}
 
-function renderAll(){
-  const incomeEl = document.getElementById('income');
-  if(incomeEl) incomeEl.value=d.income||'';
-  renderFixed();renderEnvelopes();renderSliders();renderLeftover();
-  syncPcts();window.calculate();
-  if(mainTab==='record')renderRecordTab();
-}
-window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
-
-/* ── PIN 보관함 로그인 로직 (검증 없음, 입력하는 보관함을 무조건 엶) ── */
 let pinBuf = '';
-window.pinInput = function(n) {
-  if (pinBuf.length >= 4) return;
-  pinBuf += n;
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('dot-' + i);
-    if(dot) dot.style.background = i < pinBuf.length ? '#1a1a1a' : '';
-  }
-  if (pinBuf.length === 4) setTimeout(loginToBox, 150);
+window.pinInput = function(n){
+  if(pinBuf.length>=4)return;
+  pinBuf+=n;
+  for(let i=0;i<4;i++){const dot=document.getElementById('dot-'+i);if(dot)dot.style.background=i<pinBuf.length?'#1a1a1a':'';}
+  if(pinBuf.length===4) setTimeout(loginToBox, 150);
 };
-
-window.pinDelete = function() {
-  pinBuf = pinBuf.slice(0, -1);
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('dot-' + i);
-    if(dot) dot.style.background = i < pinBuf.length ? '#1a1a1a' : '';
-  }
-};
+window.pinDelete = function(){pinBuf=pinBuf.slice(0,-1);for(let i=0;i<4;i++){const dot=document.getElementById('dot-'+i);if(dot)dot.style.background=i<pinBuf.length?'#1a1a1a':'';}};
 
 async function loginToBox() {
-  userPin = pinBuf; // 입력한 4자리 번호를 보관함 이름으로 사용
-  document.getElementById('pin-screen').style.display = 'none';
-  unlocked = true;
+  userPin = pinBuf; document.getElementById('pin-screen').style.display = 'none'; unlocked = true;
   await loadFromFirebase();
 }
 
@@ -649,17 +512,12 @@ async function loadFromFirebase() {
   if (!window._dbReady || !userPin) return;
   try {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snap = await getDoc(doc(window._db, 'users', userPin)); // PIN 자체가 보관함(문서) ID
+    const snap = await getDoc(doc(window._db, 'users', userPin));
     if (snap.exists()) {
-      const remote = snap.data().allData;
-      localStorage.setItem(SK, JSON.stringify(remote));
+      localStorage.setItem(SK, JSON.stringify(snap.data().allData));
       d = getData(viewKey);
-    } else {
-      // 해당 PIN의 보관함이 서버에 없으면 현재의 로컬 데이터를 해당 PIN으로 새로 시작
-      d = getData(TODAY);
     }
-    renderAll();
-    buildTabs();
+    renderAll(); buildTabs();
   } catch(e) { console.log('불러오기 에러', e); }
 }
 
@@ -671,10 +529,7 @@ async function saveToFirebase(all) {
   } catch(e) { console.log('저장 에러', e); }
 }
 
-window.addEventListener('db-ready', () => { 
-  buildTabs(); 
-  renderAll(); 
-});
+window.addEventListener('db-ready', () => { buildTabs(); renderAll(); });
 </script>
 </body>
 </html>
