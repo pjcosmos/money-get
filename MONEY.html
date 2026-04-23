@@ -323,18 +323,18 @@
   </div>
   <p style="font-size:12px;color:#e05a2b;min-height:18px;" id="pin-error"></p>
   <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
-    <button onclick="pinInput('1')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">1</button>
-    <button onclick="pinInput('2')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">2</button>
-    <button onclick="pinInput('3')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">3</button>
-    <button onclick="pinInput('4')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">4</button>
-    <button onclick="pinInput('5')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">5</button>
-    <button onclick="pinInput('6')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">6</button>
-    <button onclick="pinInput('7')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">7</button>
-    <button onclick="pinInput('8')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">8</button>
-    <button onclick="pinInput('9')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">9</button>
+    <button onclick="window.pinInput('1')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">1</button>
+    <button onclick="window.pinInput('2')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">2</button>
+    <button onclick="window.pinInput('3')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">3</button>
+    <button onclick="window.pinInput('4')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">4</button>
+    <button onclick="window.pinInput('5')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">5</button>
+    <button onclick="window.pinInput('6')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">6</button>
+    <button onclick="window.pinInput('7')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">7</button>
+    <button onclick="window.pinInput('8')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">8</button>
+    <button onclick="window.pinInput('9')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">9</button>
     <div></div>
-    <button onclick="pinInput('0')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">0</button>
-    <button onclick="pinDelete()" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:18px;cursor:pointer;">⌫</button>
+    <button onclick="window.pinInput('0')" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:22px;font-weight:400;cursor:pointer;">0</button>
+    <button onclick="window.pinDelete()" style="height:72px;border-radius:50%;border:0.5px solid #ddd;background:#fff;font-size:18px;cursor:pointer;">⌫</button>
   </div>
 </div>
 
@@ -392,12 +392,13 @@ let d=getData(TODAY);
 
 function saveData(){
   if(viewKey!==TODAY)return;
-  d.income=document.getElementById('income').value;
+  const incomeEl = document.getElementById('income');
+  if(incomeEl) d.income = incomeEl.value;
   const all=loadAll();all[TODAY]=d;saveAll(all);
 }
 
 /* ── 메인 탭 전환 ── */
-function switchMainTab(tab){
+window.switchMainTab = function(tab){
   mainTab=tab;
   document.getElementById('view-budget').style.display=tab==='budget'?'block':'none';
   document.getElementById('view-record').style.display=tab==='record'?'block':'none';
@@ -415,7 +416,7 @@ function buildTabs(){
   setTimeout(()=>{const a=document.querySelector('.month-tab.active');if(a)a.scrollIntoView({inline:'nearest',block:'nearest'});},50);
 }
 
-function switchMonth(key){
+window.switchMonth = function(key){
   viewKey=key;d=getData(key);savePanelOpen=false;
   const ip=key!==TODAY;
   document.getElementById('past-banner').style.display=ip?'flex':'none';
@@ -424,7 +425,7 @@ function switchMonth(key){
   renderAll();
 }
 
-function goCurrentMonth(){switchMonth(TODAY);}
+window.goCurrentMonth = function(){switchMonth(TODAY);}
 
 function setRO(on){
   ['income','go-btn','add-btn','merge-btn','add-goal-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=on;});
@@ -436,10 +437,10 @@ function renderFixed(){
   document.getElementById('fixed-list').innerHTML=d.fixedItems.map(f=>`<div class="fixed-item"><input class="fixed-input" type="text" placeholder="항목명" value="${f.name}" oninput="fName(${f.id},this.value)"/><input class="fixed-input amt" type="number" placeholder="0" value="${f.amount||''}" oninput="fAmt(${f.id},this.value)"/><button class="icon-btn" onclick="rmFixed(${f.id})">×</button></div>`).join('');
   updFSum();
 }
-function addFixed(){d.fixedItems.push({id:d.fixedIdCnt++,name:'',amount:0});renderFixed();saveData();}
-function rmFixed(id){d.fixedItems=d.fixedItems.filter(f=>f.id!==id);renderFixed();calculate();saveData();}
-function fName(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();}
-function fAmt(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();calculate();saveData();}
+window.addFixed = function(){d.fixedItems.push({id:d.fixedIdCnt++,name:'',amount:0});renderFixed();saveData();}
+window.rmFixed = function(id){d.fixedItems=d.fixedItems.filter(f=>f.id!==id);renderFixed();calculate();saveData();}
+window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();}
+window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();calculate();saveData();}
 function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);document.getElementById('fixed-sum').textContent='합계 '+s.toLocaleString()+'원';}
 
 /* ── 봉투 ── */
@@ -460,7 +461,7 @@ function renderEnvelopes(){
       </div>
     </div>`).join('');
 }
-function updEnv(i,v){
+window.updEnv = function(i,v){
   d.envelopes[i].name=v;
   const sl=document.getElementById('sln-'+d.envelopes[i].key);if(sl)sl.textContent=v;
   const lo=document.getElementById('lol-'+d.envelopes[i].key);if(lo)lo.textContent=v+' 남은 돈';
@@ -468,7 +469,7 @@ function updEnv(i,v){
 }
 
 /* ── 저축 패널 ── */
-function toggleSavePanel(){
+window.toggleSavePanel = function(){
   if(isReadonly)return;
   savePanelOpen=!savePanelOpen;
   document.getElementById('save-panel').classList.toggle('open',savePanelOpen);
@@ -500,16 +501,16 @@ function renderGoals(){
   info.className='goal-sum-info'+(total!==100?' over':'');
   if(isReadonly)document.querySelectorAll('.goal-name-input,#goal-list input[type=range],.icon-btn').forEach(el=>el.disabled=true);
 }
-function addGoal(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
-function rmGoal(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
-function gName(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
-function gSlide(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();saveData();}
+window.addGoal = function(){d.saveGoals.push({id:d.goalIdCnt++,name:'',pct:0});renderGoals();saveData();}
+window.rmGoal = function(id){d.saveGoals=d.saveGoals.filter(g=>g.id!==id);renderGoals();saveData();}
+window.gName = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.name=v;saveData();}
+window.gSlide = function(id,v){const g=d.saveGoals.find(g=>g.id===id);if(g)g.pct=parseInt(v);renderGoals();saveData();}
 
 /* ── 슬라이더 ── */
 function renderSliders(){
   document.getElementById('slider-rows').innerHTML=d.envelopes.map(e=>`<div class="sl-row"><span class="sl-name" id="sln-${e.key}">${e.name}</span><input type="range" min="0" max="100" step="1" value="${e.pct}" id="sl-${e.key}" oninput="onSlide('${e.key}')"/><span class="sl-val" id="sv-${e.key}">${e.pct}%</span></div>`).join('');
 }
-function onSlide(key){d.envelopes.find(e=>e.key===key).pct=parseInt(document.getElementById('sl-'+key).value);syncPcts();calculate();saveData();}
+window.onSlide = function(key){d.envelopes.find(e=>e.key===key).pct=parseInt(document.getElementById('sl-'+key).value);syncPcts();calculate();saveData();}
 function syncPcts(){
   const t=d.envelopes.reduce((s,e)=>s+e.pct,0);
   d.envelopes.forEach(e=>{const sv=document.getElementById('sv-'+e.key);if(sv)sv.textContent=e.pct+'%';});
@@ -521,8 +522,8 @@ function syncPcts(){
 function renderLeftover(){
   document.getElementById('leftover-rows').innerHTML=d.envelopes.map(e=>`<div class="leftover-item"><span class="leftover-label" id="lol-${e.key}">${e.name} 남은 돈</span><input class="leftover-input" type="number" id="lo-${e.key}" placeholder="0" oninput="updMSum()"/></div>`).join('');
 }
-function updMSum(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);document.getElementById('merge-sum').textContent=t.toLocaleString()+'원';}
-function mergeLeftover(){
+window.updMSum = function(){const t=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);document.getElementById('merge-sum').textContent=t.toLocaleString()+'원';}
+window.mergeLeftover = function(){
   const total=d.envelopes.reduce((s,e)=>s+(parseInt(document.getElementById('lo-'+e.key).value)||0),0);
   if(total<=0){alert('남은 금액을 입력해주세요');return;}
   const el=document.getElementById('ea-save');
@@ -549,8 +550,9 @@ function getBudget(key){
 }
 function getSpent(key){if(!d.spends||!d.spends[key])return 0;return d.spends[key].reduce((s,sp)=>s+sp.amount,0);}
 
-function calculate(){
-  const inc=parseInt(document.getElementById('income').value)||0;
+window.calculate = function(){
+  const incEl = document.getElementById('income');
+  const inc=parseInt(incEl ? incEl.value : 0)||0;
   const fix=d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
   const av=Math.max(0,inc-fix);
   const row=document.getElementById('available-row');
@@ -579,7 +581,7 @@ function renderRecordEnvTabs(){
   }).join('');
   document.getElementById('record-env-tabs').innerHTML=tabs;
 }
-function switchRecordEnv(key){activeRecordEnv=key;renderRecordTab();}
+window.switchRecordEnv = function(key){activeRecordEnv=key;renderRecordTab();}
 
 function renderRecordTab(){
   renderRecordEnvTabs();
@@ -639,7 +641,7 @@ function renderRecordTab(){
   document.getElementById('record-content').innerHTML=barHtml+addHtml+chartHtml+listHtml;
 }
 
-function addSpend(key){
+window.addSpend = function(key){
   const note=document.getElementById('si-note-'+key)?.value.trim()||'';
   const dateVal=document.getElementById('si-date-'+key)?.value||TODAY+'-01';
   const cat=document.getElementById('si-cat-'+key)?.value||'기타';
@@ -649,7 +651,7 @@ function addSpend(key){
   d.spends[key].push({id:d.spendIdCnt++,date:dateVal,note,cat,amount:amt});
   saveData();renderRecordTab();
 }
-function rmSpend(key,id){
+window.rmSpend = function(key,id){
   d.spends[key]=d.spends[key].filter(s=>s.id!==id);
   saveData();renderRecordTab();
 }
@@ -686,7 +688,8 @@ function buildDonut(key){
 }
 
 function renderAll(){
-  document.getElementById('income').value=d.income||'';
+  const incomeEl = document.getElementById('income');
+  if(incomeEl) incomeEl.value=d.income||'';
   renderFixed();renderEnvelopes();renderSliders();renderLeftover();
   syncPcts();calculate();
   document.getElementById('merge-result').style.display='none';
@@ -694,7 +697,7 @@ function renderAll(){
   if(savePanelOpen)renderGoals();
   if(mainTab==='record')renderRecordTab();
 }
-function resetAll(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
+window.resetAll = function(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(SK);location.reload();}
 
 /* ── Firebase + PIN 로직 ── */
 const FB_DOC_ID = 'budget_data';
@@ -721,8 +724,10 @@ window.pinDelete = function() {
 function updateDots() {
   for (let i = 0; i < 4; i++) {
     const dot = document.getElementById('dot-' + i);
-    dot.style.background = i < pinBuffer.length ? '#1a1a1a' : '';
-    dot.style.borderColor = i < pinBuffer.length ? '#1a1a1a' : '#ccc';
+    if(dot) {
+        dot.style.background = i < pinBuffer.length ? '#1a1a1a' : '';
+        dot.style.borderColor = i < pinBuffer.length ? '#1a1a1a' : '#ccc';
+    }
   }
 }
 
@@ -789,7 +794,7 @@ async function saveToFirebase(all) {
 function initApp() {
   const savedPin = localStorage.getItem(PIN_KEY);
   const screen = document.getElementById('pin-screen');
-  screen.style.display = 'flex';
+  if(screen) screen.style.display = 'flex';
   if (!savedPin) {
     pinMode = 'set';
     document.getElementById('pin-title').textContent = 'PIN 설정 (4자리)';
