@@ -526,7 +526,6 @@ window.calculate = function(excludeKey){
   if(document.getElementById('total-pct')) document.getElementById('total-pct').textContent = '100.0%';
 }
 
-/* ── 기록 탭 렌더링 ── */
 function renderRecordTab(){
   renderRecordEnvTabs();
   const key=activeRecordEnv;
@@ -549,7 +548,6 @@ function renderRecordTab(){
         <div class="budget-bar-bg"><div class="budget-bar-fill ${spent>budget?'over':''}" style="width:${pct}%"></div></div>
       </div>
     </div>
-
     <div class="spend-add-card">
       <div class="section-label">지출 추가</div>
       <div class="spend-row-input">
@@ -562,9 +560,7 @@ function renderRecordTab(){
         <button class="spend-add-btn" onclick="addSpend('${key}')">+</button>
       </div>
     </div>
-
     ${buildDonut(key)}
-
     <div class="spend-list-card">
       <div class="section-label">지출 내역</div>
       ${d.spends[key].length===0 ? '<div style="text-align:center; padding:30px; color:#ccc; font-size:13px;">내역 없음</div>' : 
@@ -673,5 +669,6 @@ function initApp() {
 let pinBuffer = ''; let pinMode = 'verify'; let pinFirst = '';
 buildTabs(); initApp();
 </script>
+
 </body>
 </html>
