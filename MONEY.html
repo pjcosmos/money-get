@@ -270,11 +270,12 @@ function defData(){
       {key:'fun',name:'여가',pct:10},
       {key:'emer',name:'비상금',pct:10},
     ],
+    envIdCnt: 5,
     fixedItems:[{id:1,name:'통신비',amount:0},{id:2,name:'OTT',amount:0},{id:3,name:'교통비',amount:0}],
     fixedIdCnt:4,
     saveGoals:[{id:1,name:'주식',pct:50},{id:2,name:'여행',pct:30},{id:3,name:'기타',pct:20}],
     goalIdCnt:4,
-    spends:{life:[],fun:[]},
+    spends:{},
     spendIdCnt:1,
   };
 }
@@ -298,11 +299,12 @@ function getData(key){
     return {
       income:'',
       envelopes: p.envelopes.map(e => ({...e})),
+      envIdCnt: p.envIdCnt || 5,
       fixedItems: p.fixedItems.map(f => ({...f})),
       fixedIdCnt: p.fixedIdCnt,
       saveGoals: (p.saveGoals || []).map(g => ({...g})),
       goalIdCnt: p.goalIdCnt || 4,
-      spends: {life:[], fun:[]},
+      spends: {},
       spendIdCnt: 1
     };
   }
@@ -328,7 +330,6 @@ function unformatNum(s) {
   return parseInt(s.toString().replace(/[^0-9]/g, '')) || 0;
 }
 
-/* ── UI 제어 ── */
 window.switchMainTab = function(tab){
   mainTab=tab;
   document.getElementById('view-budget').style.display=tab==='budget'?'block':'none';
@@ -370,8 +371,20 @@ window.fName = function(id,v){d.fixedItems.find(f=>f.id===id).name=v;saveData();
 window.fAmt = function(id,v){d.fixedItems.find(f=>f.id===id).amount=parseInt(v)||0;updFSum();calculate();saveData();}
 function updFSum(){const s=d.fixedItems.reduce((a,f)=>a+(f.amount||0),0);document.getElementById('fixed-sum').textContent='합계 '+formatNum(s)+'원';}
 
+/* ── 봉투 렌더링 (x 표시 조건부 노출) ── */
 function renderEnvelopes(){
-  document.getElementById('envelopes').innerHTML=d.envelopes.map((e,i)=>`
+  const container = document.getElementById('envelopes');
+  const label = document.querySelector('#view-budget .section:nth-child(3) .section-label');
+  const defaults = ['save', 'life', 'fun', 'emer']; // 기본 봉투 키값
+
+  if(label){
+    label.style.display = 'flex'; label.style.justifyContent = 'space-between'; label.style.alignItems = 'center';
+    label.innerHTML = `<span>봉투 (금액 입력 시 자동 배분)</span> 
+      <button class="add-env-btn" onclick="addEnvelope()" 
+        style="width:20px; height:20px; border-radius:50%; border:1px solid #ddd; background:#fff; color:#1a1a1a; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; padding:0; margin-right:4px;">+</button>`;
+  }
+
+  container.innerHTML=d.envelopes.map((e,i)=>`
     <div class="envelope" id="env-${e.key}" style="border-color:${savePanelOpen && e.key==='save' ? '#1a1a1a' : '#e0e0e0'}">
       <div class="env-flap" ${e.key==='save'?'onclick="toggleSavePanel()" style="cursor:pointer;"':''}>
         <svg viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -381,7 +394,10 @@ function renderEnvelopes(){
         </svg>
       </div>
       <div class="env-body">
-        <input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="updEnv(${i},this.value)"/>
+        <div style="display:flex; width:100%; justify-content:center; align-items:center; gap:4px;">
+          <input class="env-name-input" type="text" value="${e.name}" onclick="event.stopPropagation()" oninput="updEnv(${i},this.value)"/>
+          ${ !defaults.includes(e.key) ? `<button onclick="removeEnvelope('${e.key}')" style="background:none; border:none; color:#ddd; font-size:14px; cursor:pointer; padding:0;">×</button>` : ''}
+        </div>
         <div style="width:100%; display:flex; flex-direction:column; align-items:center; margin:4px 0;">
           <input class="env-amt-input" type="text" id="ea-${e.key}" value="" onclick="event.stopPropagation(); this.select();" oninput="onAmtInput('${e.key}', this)" onblur="onAmtBlur('${e.key}', this)" placeholder="—"/>
         </div>
@@ -390,7 +406,22 @@ function renderEnvelopes(){
         ${e.key==='save'?`<div style="font-size:10px;color:#bbb;margin-top:6px;cursor:pointer;background:#f9f9f9;padding:2px 8px;border-radius:10px;" onclick="toggleSavePanel()">${savePanelOpen?'닫기 ▲':'자세히 ▼'}</div>`:''}
       </div>
     </div>`).join('');
+  renderSliders();
   calculate();
+}
+
+window.addEnvelope = function(){
+  const newKey = 'env_' + (d.envIdCnt++);
+  d.envelopes.push({key: newKey, name: '새 봉투', pct: 0});
+  renderAll(); saveData();
+}
+
+window.removeEnvelope = function(key){
+  if(!confirm('봉투를 삭제할까요?')) return;
+  const removedPct = d.envelopes.find(e => e.key === key)?.pct || 0;
+  d.envelopes = d.envelopes.filter(e => e.key !== key);
+  if(d.envelopes.length > 0) d.envelopes[0].pct += removedPct;
+  renderAll(); saveData();
 }
 
 window.updEnv = function(i,v){ d.envelopes[i].name=v; saveData(); renderRecordEnvTabs(); }
@@ -425,8 +456,10 @@ function updateUIExcept(excludeKey) {
   const av = inc - fix;
   d.envelopes.forEach(e => {
     if(document.getElementById('ep-'+e.key)) document.getElementById('ep-'+e.key).textContent = e.pct.toFixed(1) + '%';
-    if(document.getElementById('sl-'+e.key)) document.getElementById('sl-'+e.key).value = e.pct;
-    if(document.getElementById('sv-'+e.key)) document.getElementById('sv-'+e.key).textContent = e.pct.toFixed(1) + '%';
+    const slEl = document.getElementById('sl-'+e.key);
+    if(slEl) slEl.value = e.pct;
+    const svEl = document.getElementById('sv-'+e.key);
+    if(svEl) svEl.textContent = e.pct.toFixed(1) + '%';
     if (e.key !== excludeKey) {
       const aEl = document.getElementById('ea-' + e.key);
       if (aEl) {
@@ -524,12 +557,13 @@ window.calculate = function(excludeKey){
     if(e.showDaily){const dEl=document.getElementById('ed-'+e.key);if(dEl)dEl.textContent=av>0?'하루 약 '+formatNum(Math.floor(amt/30))+'원':'';}
   });
   if(document.getElementById('total-pct')) document.getElementById('total-pct').textContent = '100.0%';
+  if(savePanelOpen) renderGoals();
 }
 
 function renderRecordTab(){
   renderRecordEnvTabs();
   const key=activeRecordEnv;
-  if(!d.spends) d.spends = {life:[], fun:[]};
+  if(!d.spends) d.spends = {};
   if(!d.spends[key]) d.spends[key]=[];
   const inc = parseInt(document.getElementById('income')?.value)||0;
   const fix = d.fixedItems.reduce((s,f)=>s+(f.amount||0),0);
@@ -578,10 +612,10 @@ function renderRecordTab(){
 }
 
 function renderRecordEnvTabs(){
-  const envs = ['life','fun'];
-  document.getElementById('record-env-tabs').innerHTML = envs.map(key=>{
-    const env=d.envelopes.find(e=>e.key===key);
-    return `<button class="record-env-tab ${activeRecordEnv===key?'active':''}" onclick="activeRecordEnv='${key}'; renderRecordTab();">${env?env.name:key}</button>`;
+  const envs = d.envelopes.filter(e => e.key !== 'save');
+  if(envs.length > 0 && !envs.find(e => e.key === activeRecordEnv)) activeRecordEnv = envs[0].key;
+  document.getElementById('record-env-tabs').innerHTML = envs.map(e=>{
+    return `<button class="record-env-tab ${activeRecordEnv===e.key?'active':''}" onclick="activeRecordEnv='${e.key}'; renderRecordTab();">${e.name}</button>`;
   }).join('');
 }
 
@@ -591,10 +625,10 @@ window.addSpend = function(key){
   const cat=document.getElementById('si-cat-'+key).value;
   const amt=parseInt(document.getElementById('si-amt-'+key).value)||0;
   if(amt<=0) return;
+  if(!d.spends[key]) d.spends[key] = [];
   d.spends[key].push({id:d.spendIdCnt++, date:dateVal, note, cat, amount:amt});
   saveData(); renderRecordTab();
 }
-
 window.rmSpend = function(key,id){ d.spends[key]=d.spends[key].filter(s=>s.id!==id); saveData(); renderRecordTab(); }
 
 function buildDonut(key){
@@ -650,7 +684,7 @@ async function loadFromFirebase() {
   try {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const snap = await getDoc(doc(window._db, 'users', 'pin_' + currentPin));
-    if (snap.exists()) { localStorage.setItem(SK, JSON.stringify(snap.data())); } else { localStorage.setItem(SK, JSON.stringify({})); }
+    if (snap.exists()) { d = {...defData(), ...snap.data()}; localStorage.setItem(SK, JSON.stringify(d)); } else { localStorage.setItem(SK, JSON.stringify({})); }
     unlocked = true; d = getData(viewKey); renderAll();
   } catch(e) { console.log('Firebase load error', e); }
 }
